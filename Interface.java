@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pkginterface.CSE360Project;
+package to.pkgdo.list.project.CSE360Project;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -63,7 +63,7 @@ public class Interface extends Application {
        TextField priorityField = new TextField();
        TextField dueField = new TextField();
        // set the scene 
-       Scene scene = new Scene(gridPane, 300, 250);
+    //   Scene scene = new Scene(gridPane, 300, 250);
        primaryStage.setScene(scene);
        primaryStage.show();
     }
