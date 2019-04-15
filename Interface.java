@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pkginterface;
+package pkginterface.CSE360Project;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -30,7 +31,9 @@ public class Interface extends Application {
     @Override
     public void start(Stage primaryStage) {
        
-       GridPane gridPane = new GridPane();
+       GridPane baseGridPane = new GridPane();
+       GridPane leftGridPane = new GridPane();
+       GridPane rightGridPane = new GridPane();
        
        // Create buttons at bottom of app
        Button create = new Button("Create");
@@ -50,15 +53,19 @@ public class Interface extends Application {
        // Add column headers to table
        table.getColumns().addAll(descripCol, priorityCol, dateCol, statusCol);
         
-       //Add panels to Pane
-       gridPane.add(table, 0, 0);
-       gridPane.add(hbox, 0, 1);
+       //Add panels to Left Grid Pane
+       leftGridPane.add(table, 0, 0);
+       leftGridPane.add(hbox, 0, 1);
        //pane.setTop(table);
 
+       // Add panels to Right Grid Pane
+       TextField descripField = new TextField();
+       TextField priorityField = new TextField();
+       TextField dueField = new TextField();
        // set the scene 
        Scene scene = new Scene(gridPane, 300, 250);
        primaryStage.setScene(scene);
-        primaryStage.show();
+       primaryStage.show();
     }
 
     /**
