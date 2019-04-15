@@ -37,8 +37,7 @@ public class JavaFXApplication1 extends Application {
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("Status","Not Started","In progress","Finished");
         choiceBox.setValue("Status");
-        //button = new Button("Save");
-         //button.setOnAction(e -> getChoice(choiceBox));
+        
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
@@ -51,36 +50,15 @@ public class JavaFXApplication1 extends Application {
 
     //To get the value of the selected item
     private void getChoice(ChoiceBox<String> choiceBox){
-        String food = choiceBox.getValue();
-        System.out.println(food);
+        String choice = choiceBox.getValue();
+        
     }
 
 
         
                 
         
-        /**
-       // Button btn = new Button();
-        //btn.setText("Status");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
-        Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-    * **/
-        
+     
 
     /**
      * @param args the command line arguments
