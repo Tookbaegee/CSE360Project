@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javafxapplication1;
+package pkginterface.CSE360Project;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
