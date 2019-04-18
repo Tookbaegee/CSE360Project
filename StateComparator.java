@@ -15,9 +15,8 @@ public class StateComparator implements Comparator<Todo>{
 
     @Override
     public int compare(Todo todo1, Todo todo2) {
-        int compared =  (todo1.getStatus() - todo2.getStatus())*100;
-        compared += todo1.getDescription().compareTo(todo2.getDescription());
-        return compared;   
+   
+        return todo1.getStatus().compareTo(todo2.getStatus());   
     }
     
 }

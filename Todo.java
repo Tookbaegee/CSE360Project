@@ -1,33 +1,48 @@
 package CSE360Project;
 
 import java.util.Date;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Todo{
 	private String description;
 	private int priorityNum;
 	private Date dueDate;
         private Date startDate;
-	private int status;
+	private String status;
 	
 	public Todo() {
 		
 	}
 	
-	public Todo(String description, int priorityNum, Date dueDate, int status) {
-		this.description = description;
+	public Todo(String description, int priorityNum, Date dueDate, String status) {
+		this.setDescription(description);
 		this.setPriorityNum(priorityNum);
 		this.setDueDate(dueDate);
 		this.setStatus(status);
+                this.setStartDate(new Date(0));
 	}
-	
+        
+        public Todo(String description, int priorityNum, Date dueDate, String status, Date startDate) {
+		this.setDescription(description);
+		this.setPriorityNum(priorityNum);
+		this.setDueDate(dueDate);
+		this.setStatus(status);
+                this.setStartDate(startDate);
+	}
+        
+      
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
+     
 	public int getPriorityNum() {
 		return priorityNum;
 	}
@@ -35,6 +50,7 @@ public class Todo{
 	public void setPriorityNum(int priorityNum) {
 		this.priorityNum = priorityNum;
 	}
+        
 
 	public Date getDueDate() {
 		return dueDate;
@@ -44,11 +60,11 @@ public class Todo{
 		this.dueDate = dueDate;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 	
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
         
