@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -39,6 +41,8 @@ import javafx.stage.Stage;
  * @author Komal
  */
 public class Interface extends Application {
+    
+    private ObservableList<Todo> todos;
      
     private GridPane createGridPane() {
             GridPane gridpane = new GridPane();
@@ -131,11 +135,13 @@ public class Interface extends Application {
         TableColumn priorityCol = new TableColumn("Priority");
         TableColumn dateCol = new TableColumn("Due Date");
         TableColumn statusCol = new TableColumn("Status");
-
+        
         // Add column headers to table
         table.getColumns().addAll(descripCol, priorityCol, dateCol, statusCol);
         
-
+        todos = FXCollections.observableArrayList();
+        table.setItems(todos);
+        
         //Add panels to Left Grid Pane
         leftGridPane.add(table, 0, 0);
         leftGridPane.add(hbox, 0, 1);
