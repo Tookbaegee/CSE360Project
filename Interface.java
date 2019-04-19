@@ -258,9 +258,10 @@ public class Interface extends Application {
        
       
         // Add table that will display To-Do List Items
-        TableView table = createTableView(todos);
+        TableView<Todo> todoTableView = createTableView(todos);
+
         //Add panels to Left Grid Pane
-        leftGridPane.add(table, 0, 0);
+        leftGridPane.add(todoTableView, 0, 0);
         leftGridPane.add(hbox, 0, 1);
 
         // Add panels to Right Grid Pane
@@ -268,7 +269,22 @@ public class Interface extends Application {
         TextField priorityField = new TextField();
         TextField dueField = new TextField();
         TextField status = new TextField();
-
+        
+        //right panel listens to the table view selection
+        todoTableView.getSelectionModel().selectedItemProperty().addListener(
+            (ObservableValue<? extends Todo> observable, Todo oldValue,Todo newValue) -> {
+              if (observable != null && observable.getValue() != null) {
+                descripField.setText(observable.getValue().getDescription());
+                priorityField.setText(""+observable.getValue().getPriorityNum());
+                 String pattern = "MM-dd-yyyy";
+                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                 dueField.setText(simpleDateFormat.format(observable.getValue().getDueDate()));
+                 status.setText(observable.getValue().getStatus());
+                 
+              
+              }
+        });
+        
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
         Label priorityLabel = new Label("Priority");
