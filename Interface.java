@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkginterface.CSE360Project;
+package to.pkgdo.list.project.CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -238,9 +238,13 @@ public class Interface extends Application {
                 
         // Add panels to Right Grid Pane
         descripField = new TextField();
+        descripField.setEditable(false);
         priorityField = new TextField();
+        priorityField.setEditable(false);
         dueField = new TextField();
+        dueField.setEditable(false);
         statusField = new TextField();
+        statusField.setEditable(false);
         
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
@@ -253,6 +257,21 @@ public class Interface extends Application {
         delete = new Button("Delete");
         edit.setDisable(true);
         delete.setDisable(true);
+        edit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                  descripField.setEditable(true);
+                  priorityField.setEditable(true);
+                  dueField.setEditable(true);
+                  statusField.setEditable(true);
+            }
+        });
+        delete.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                
+            }
+        });
         HBox buttonBox = new HBox(edit, delete);
 
         // Create Right Pane
