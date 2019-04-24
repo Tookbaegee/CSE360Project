@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkginterface.CSE360Project;
+package to.pkgdo.list.project.CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -65,8 +65,11 @@ public class Interface extends Application {
     TextField statusField;
     Button edit;
     Button delete;
+<<<<<<< HEAD
     Button apply;
     
+=======
+>>>>>>> origin/master
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
     
@@ -282,6 +285,7 @@ public class Interface extends Application {
         apply = new Button("Apply");
         apply.setVisible(false);
         delete.setDisable(true);
+<<<<<<< HEAD
         edit.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
@@ -302,6 +306,16 @@ public class Interface extends Application {
             @Override
             public void handle(ActionEvent event) {
                 deletePopUp();
+=======
+        edit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                  descripField.setEditable(true);
+                  priorityField.setEditable(true);
+                  dueField.setEditable(true);
+                  statusField.setEditable(true);
+                  
+>>>>>>> origin/master
             }
         });
         delete.setOnAction(new EventHandler<ActionEvent>(){
@@ -431,7 +445,21 @@ public class Interface extends Application {
                  delete.setDisable(true);
             }
         });
+<<<<<<< HEAD
 
+=======
+        todoTableView.getSelectionModel().selectedItemProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                 descripField.clear();
+                 priorityField.clear();
+                 dueField.clear();
+                 statusField.clear();
+                 edit.setDisable(true);
+                 delete.setDisable(true);
+            }
+        });
+>>>>>>> origin/master
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
         Label priorityLabel = new Label("Priority");
