@@ -23,7 +23,10 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -60,6 +63,7 @@ public class Interface extends Application {
     TextField statusField;
     Button edit;
     Button delete;
+    Button apply;
     
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
     
@@ -250,11 +254,31 @@ public class Interface extends Application {
         
         // Add Edit and Delete Buttons
         edit = new Button("Edit");
-        delete = new Button("Delete");
         edit.setDisable(true);
+        delete = new Button("Delete");
+        apply = new Button("Apply");
+        apply.setVisible(false);
         delete.setDisable(true);
+        edit.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                apply.setVisible(true);
+                edit.setVisible(false);
+                delete.setVisible(false);
+            }
+            
+        });
+        delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                deletePopUp();
+            }
+        });
         HBox buttonBox = new HBox(edit, delete);
 
+        
         // Create Right Pane
         rightGridPane.add(descripLabel, 0, 0);
         rightGridPane.add(descripField, 0, 1);
@@ -265,6 +289,7 @@ public class Interface extends Application {
         rightGridPane.add(statusLabel, 0, 6);
         rightGridPane.add(statusField, 0, 7);
         rightGridPane.add(buttonBox, 0, 15);
+        rightGridPane.add(apply, 0, 16);
         
          // Center labels on right pane
         rightGridPane.setHalignment(descripLabel, javafx.geometry.HPos.CENTER);
@@ -274,6 +299,31 @@ public class Interface extends Application {
         rightGridPane.setHalignment(buttonBox, javafx.geometry.HPos.CENTER);
         
         return rightGridPane;
+    }
+    
+    private void deletePopUp()
+    {
+        Alert deleteAlert = new Alert(AlertType.CONFIRMATION);
+        deleteAlert.setTitle("Confirmation Dialog");
+        deleteAlert.setHeaderText("Delete Confirmation Dialog");
+        deleteAlert.setContentText("Are you sure you want to delete?");
+        deleteAlert.show();
+    }
+    
+    private void savePopUp()
+    {
+          Alert alert=new Alert(AlertType.CONFIRMATION);
+          alert.setTitle("Save Button");
+          alert.setHeaderText("Are you sure you want to save these changes?");
+          alert.show(); 
+    } 
+    
+    private void restartPopUp()
+    {
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Restart Button");
+        alert.setHeaderText("Are you sure you want to discard all changes and start from scratch?");
+        alert.show(); 
     }
 
     @Override
@@ -295,8 +345,22 @@ public class Interface extends Application {
         Button create = new Button("Create");
         Button print = new Button("Print");
         Button save = new Button("Save");
+        save.setOnAction(new EventHandler<ActionEvent>() 
+      {
+        @Override
+        public void handle(ActionEvent event) 
+        {
+            savePopUp();
+        }
+      });
         Button restore = new Button("Restore");
         Button restart = new Button("Restart");
+        restart.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                restartPopUp();
+            }
+        });
         HBox hbox = new HBox(create, print, save, restore, restart);
       
         // Add table that will display To-Do List Items
@@ -307,9 +371,12 @@ public class Interface extends Application {
         leftGridPane.add(hbox, 0, 1);
         
         // right panel listens to the table view selection
-        todoTableView.getSelectionModel().selectedItemProperty().addListener(
-            (ObservableValue<? extends Todo> observable, Todo oldValue,Todo newValue) -> {
-              if (observable != null && observable.getValue() != null) {
+        todoTableView.getSelectionModel().selectedItemProperty().addListener
+        (
+            (ObservableValue<? extends Todo> observable, Todo oldValue,Todo newValue) -> 
+            {
+              if (observable != null && observable.getValue() != null) 
+              {
                 descripField.setText(observable.getValue().getDescription());
                 priorityField.setText(""+observable.getValue().getPriorityNum());
                  String pattern = "MM-dd-yyyy";
@@ -318,8 +385,9 @@ public class Interface extends Application {
                  statusField.setText(observable.getValue().getStatus());
                  edit.setDisable(false);
                  delete.setDisable(false);
-              }
-        });
+               }
+            }
+        );
         
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
@@ -327,7 +395,6 @@ public class Interface extends Application {
         Label dueLabel = new Label("Due Date");
         Label statusLabel = new Label("Status");
 
-//        
         create.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -345,9 +412,9 @@ public class Interface extends Application {
        baseGridPane.add(leftGridPane, 0, 0);
        baseGridPane.add(rightGridPane, 1, 0);
 
-        Scene scene = new Scene(baseGridPane, 800, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+       Scene scene = new Scene(baseGridPane, 800, 600);
+       primaryStage.setScene(scene);
+       primaryStage.show();
     }
 
     /**
