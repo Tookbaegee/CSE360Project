@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -23,6 +25,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -60,7 +64,7 @@ public class Interface extends Application {
     TextField statusField;
     Button edit;
     Button delete;
-    
+    TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
     
     // Make table method
@@ -138,8 +142,8 @@ public class Interface extends Application {
 
             Label statusLabel = new Label("Status");
             ChoiceBox<String> choiceBox = new ChoiceBox<>();
-                choiceBox.getItems().addAll("Not Started","In Progress","Finished");
-                choiceBox.setValue("Status");
+            choiceBox.getItems().addAll("Not Started","In Progress");
+            choiceBox.setValue("Status");
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
@@ -187,7 +191,23 @@ public class Interface extends Application {
                     }
                     
                     Todo todo = new Todo(description, priorityNum, dueDate, status, startDate);
-                    todos.add(todo);
+                    boolean priorityDup = false;
+                    for(int i = 0; i < todos.size(); i++){
+                        if(todos.get(i).getPriorityNum() == priorityNum){
+                            priorityDup = true;
+                        }
+                    }
+                    if(priorityDup){
+                    
+                        //allert user that an entry with the priority number being entered already exists in the list.
+                        
+                           Alert alert = new Alert(AlertType.WARNING);
+                           alert.setTitle("Warning Button");
+                           alert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
+                           alert.show(); 
+                    }else{
+                          todos.add(todo);
+                    }
                 }
             });
 
@@ -264,12 +284,13 @@ public class Interface extends Application {
                   priorityField.setEditable(true);
                   dueField.setEditable(true);
                   statusField.setEditable(true);
+                  
             }
         });
         delete.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
-                
+                todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
             }
         });
         HBox buttonBox = new HBox(edit, delete);
@@ -298,9 +319,8 @@ public class Interface extends Application {
     @Override
     public void start(Stage primaryStage) {
         GridPane baseGridPane = new GridPane();
-        GridPane leftGridPane = new GridPane();
+        GridPane leftGridPane = new GridPane();      
         GridPane rightGridPane = rightAppPane();
-
         //add constraints and gaps between components
         leftGridPane.setHgap(8);
         leftGridPane.setVgap(8);
@@ -317,10 +337,10 @@ public class Interface extends Application {
         Button restore = new Button("Restore");
         Button restart = new Button("Restart");
         HBox hbox = new HBox(create, print, save, restore, restart);
-      
+        todoTableView = createTableView(todos);
+        
         // Add table that will display To-Do List Items
-        TableView<Todo> todoTableView = createTableView(todos);
-
+      
         //Add panels to Left Grid Pane
         leftGridPane.add(todoTableView, 0, 0);
         leftGridPane.add(hbox, 0, 1);
@@ -339,7 +359,17 @@ public class Interface extends Application {
                  delete.setDisable(false);
               }
         });
-        
+        todoTableView.getSelectionModel().selectedItemProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                 descripField.clear();
+                 priorityField.clear();
+                 dueField.clear();
+                 statusField.clear();
+                 edit.setDisable(true);
+                 delete.setDisable(true);
+            }
+        });
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
         Label priorityLabel = new Label("Priority");
