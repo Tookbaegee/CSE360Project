@@ -77,6 +77,7 @@ public class Interface extends Application {
     Button delete;
     Button apply;
     Button cancelEdit;
+    Button complete;
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -179,7 +180,8 @@ public class Interface extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if(!result.isPresent()){
         }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
+        else if(result.get() == ButtonType.OK)
+        {
             todos.clear();
             todos.addAll(JsonEditor.readTodo());
         }      
@@ -364,7 +366,17 @@ public class Interface extends Application {
             return gridpane;
 
        }
-    
+    private void completePopUp()
+    {
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Complete Button");
+        alert.setHeaderText("Are you sure you have completed task and would like to remove it from list?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == ButtonType.OK)
+        {
+            todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
+        }
+    }
     
     private GridPane rightAppPane()
     {
@@ -406,12 +418,14 @@ public class Interface extends Application {
         
         // Add Edit and Delete Buttons
         edit = new Button("Edit");
-        edit.setDisable(true);
         delete = new Button("Delete");
         apply = new Button("Apply");
         cancelEdit = new Button("Cancel");
+        complete = new Button("Complete");
         apply.setVisible(false);
         cancelEdit.setVisible(false);
+        edit.setDisable(true);
+        complete.setDisable(true);
         delete.setDisable(true);
         edit.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -443,8 +457,14 @@ public class Interface extends Application {
                 applyPopUp();
             }
         });
+        
+        complete.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                completePopUp();
+            }});
       
-        HBox buttonBox = new HBox(edit, delete);
+        HBox buttonBox = new HBox(edit, delete, complete);
         HBox editBox = new HBox(apply, cancelEdit);
         
         // Create Right Pane
@@ -471,9 +491,7 @@ public class Interface extends Application {
         rightGridPane.setHalignment(buttonBox, javafx.geometry.HPos.CENTER);
         return rightGridPane;
     }
-    
    
-
     @Override
     public void start(Stage primaryStage) {
         GridPane baseGridPane = new GridPane();
@@ -556,14 +574,12 @@ public class Interface extends Application {
                      finishPicker.setVisible(true);
                      finishPicker.setDisable(false);
                  }
-              
-                  
                  apply.setVisible(false);
                  edit.setVisible(true);
                  delete.setVisible(true);
                  edit.setDisable(false);
                  delete.setDisable(false);
-                 
+                 complete.setDisable(false);
                }
             }
         );
@@ -576,9 +592,11 @@ public class Interface extends Application {
                  startPicker.getEditor().clear();
                  edit.setDisable(true);
                  delete.setDisable(true);
+                 complete.setDisable(true);
                  apply.setVisible(false);
                  edit.setVisible(true);
                  delete.setVisible(true);
+                 complete.setVisible(true);
             }
         });
 
