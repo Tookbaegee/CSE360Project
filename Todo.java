@@ -1,4 +1,4 @@
-package to.pkgdo.list.project.CSE360Project;
+package CSE360Project;
 
 import java.util.Date;
 import javafx.beans.property.IntegerProperty;
