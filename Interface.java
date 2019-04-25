@@ -78,6 +78,7 @@ public class Interface extends Application {
     Button apply;
     Button cancelEdit;
     Button complete;
+    Button displayAll;
     final Stage popup = new Stage();
     
     TableView<Todo> todoTableView;
@@ -139,8 +140,10 @@ public class Interface extends Application {
     
     private boolean checkPriorityDup(int priorityNum){
         boolean priorityDup = false;
-        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
-            if(todos.get(todoIndex).getPriorityNum() == priorityNum){
+        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++)
+        {
+            if(todos.get(todoIndex).getPriorityNum() == priorityNum)
+            {
                 priorityDup = true;
             }
         }
@@ -240,13 +243,14 @@ public class Interface extends Application {
     private void applyPopUp()
     {
         Alert alert=new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Restore Button");
+        alert.setTitle("Edit Button");
         alert.setHeaderText("Are you sure you apply the edit made?");
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() == ButtonType.OK)
         {
             Todo editedTodo = new Todo();
             apply.setVisible(false);
+            cancelEdit.setVisible(false);
             edit.setVisible(true);
             delete.setVisible(true);
             descripField.setEditable(false);
@@ -486,6 +490,9 @@ public class Interface extends Application {
                 duePicker.getEditor().clear();
                 statusComboBox.setDisable(false);
                 statusComboBox.setEditable(true);
+                statusComboBox.getEditor().clear();
+                startPicker.setDisable(false);
+                startPicker.setEditable(true);
                 startPicker.getEditor().clear();
                 finishPicker.getEditor().clear();
             }
@@ -593,6 +600,7 @@ public class Interface extends Application {
             
         Button restore = new Button("Restore");
         Button restart = new Button("Restart");
+        displayAll = new Button("Display All");
         
         save.setOnAction(new EventHandler<ActionEvent>(){
             @Override
@@ -615,7 +623,7 @@ public class Interface extends Application {
                  restorePopUp();
             }
         });
-        HBox hbox = new HBox(create, print, save, restore, restart);
+        HBox hbox = new HBox(create, print, save, restore, restart, displayAll);
         todoTableView = createTableView(todos);
         
         // Add table that will display To-Do List Items
@@ -675,9 +683,9 @@ public class Interface extends Application {
                  duePicker.getEditor().clear();
                  duePicker.setEditable(false);
                  duePicker.setDisable(true);
+                 statusComboBox.getEditor().clear();
                  statusComboBox.setEditable(false);
-                 statusComboBox.setDisable(false);
-                 statusComboBox.setValue("");
+                 statusComboBox.setDisable(true);
                  startPicker.getEditor().clear();
                  startPicker.setEditable(false);
                  startPicker.setDisable(true);
