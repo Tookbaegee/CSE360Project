@@ -397,6 +397,7 @@ public class Interface extends Application {
                 cancelEdit.setVisible(true);
                 edit.setVisible(false);
                 delete.setVisible(false);
+                complete.setVisible(false);
                 descripField.setDisable(false);
                 descripField.setEditable(true);
                 priorityField.setDisable(false);
