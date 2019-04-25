@@ -145,6 +145,14 @@ public class Interface extends Application {
         }
     }
     
+      private void createConfirmPopUp()
+    {
+        Alert deleteAlert = new Alert(AlertType.CONFIRMATION);
+        deleteAlert.setTitle("Confirmation Dialog");
+        deleteAlert.setHeaderText("Entry successfully added");
+        deleteAlert.setContentText("You may now exit this window");
+    };
+      
     private void savePopUp()
     {
          Alert alert=new Alert(AlertType.CONFIRMATION);
@@ -215,8 +223,6 @@ public class Interface extends Application {
                 Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
                 Date finishDate = Date.from(finishDateInstant);
             }
-          
-            
         }      
     }
     
@@ -248,13 +254,9 @@ public class Interface extends Application {
             Label statusLabel = new Label("Status");
             TextField statusField = new TextField("Not Started");
             statusField.setDisable(true);
-//            ComboBox<String> comboBox = new ComboBox<>();
-//            comboBox.getItems().addAll("Not Started","In Progress", "Finished");
-//            comboBox.setValue("Status");
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
- //           layout.getChildren().addAll(comboBox);
 
             Label startDateLabel = new Label("Start Date");          
             DatePicker startDatePicker = new DatePicker();               
@@ -270,20 +272,6 @@ public class Interface extends Application {
             finishDateLabel.visibleProperty().set(false);
             hBoxFinishDate.visibleProperty().set(false);
             
-//            //hides if comboBox choice is not in progress
-//            comboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
-//            {
-//                @Override
-//                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
-//                {
-//                    int index = (Integer)newValue;
-//                    startDateLabel.visibleProperty().set(index == 1 || index == 2);
-//                    hBoxStartDate.visibleProperty().set(index == 1 || index == 2);
-//                    finishDateLabel.visibleProperty().set(index == 2);
-//                    hBoxFinishDate.visibleProperty().set(index == 2);
-//                }
-//            });
-            
             Button saveButton = new Button("Create");
             saveButton.setOnAction(new EventHandler<ActionEvent>() 
             {
@@ -291,48 +279,10 @@ public class Interface extends Application {
                 public void handle(ActionEvent event) 
                 {
                     String description = descriptionField.getText();
-                    //int priorityNum = Integer.parseInt(numberField.getText());
                     LocalDate localDueDate = dueDatePicker.getValue();
                     Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
                     Date dueDate = Date.from(dueDateInstant);
-                    //String status = comboBox.getValue();
-                    Date startDate = new Date();
-                    Date finishDate = new Date();
-//                    if(comboBox.getValue().equals("In Progress") || comboBox.getValue().equals("Finished"))
-//                    {
-//                        LocalDate localStartDate = startDatePicker.getValue();
-//                        Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-//                        startDate = Date.from(startDateInstant);        
-//                    }
-//                    else if(comboBox.getValue().equals("Finished"))
-//                    {
-//                        LocalDate localFinishDate = finishDatePicker.getValue();
-//                        Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-//                        finishDate = Date.from(finishDateInstant);    
-//                    }
-                    
-//                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
-//                    boolean priorityDup = false;
-//                    for(int iter = 0; iter < todos.size(); iter++)
-//                    {
-//                        if(todos.get(iter).getPriorityNum() == priorityNum)
-//                        {
-//                            priorityDup = true;
-//                        }
-//                    }
-//                    if(priorityDup)
-//                    {
-//                        //allert user that an entry with the priority number being entered already exists in the list.
-//                        Alert alert = new Alert(AlertType.WARNING);
-//                        alert.setTitle("Warning Button");
-//                        alert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
-//                        alert.show(); 
-//                    }
-//                    else
-//                    {
-//                          todos.add(todo);
-//                    }
-//                }
+                    createConfirmPopUp();
             }});
 
             GridPane.setHalignment(descriptionLabel, HPos.RIGHT);
