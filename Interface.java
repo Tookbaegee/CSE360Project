@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CSE360Project.CSE360Project;
+package CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -42,7 +42,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.ColumnConstraintsBuilder;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -50,9 +49,14 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 
 /**
  *
@@ -308,6 +312,8 @@ public class Interface extends Application {
             }
         }      
     }
+
+    
     
     private GridPane createPopUp() 
     {
@@ -401,6 +407,60 @@ public class Interface extends Application {
             decrementAllPriority(ogPriority);
         }
     }
+    
+    private void displayPopUp(){
+        
+    }
+    
+    private GridPane printPopUp(){
+       
+       
+            GridPane printgridpane = new GridPane();
+            printgridpane.setPadding(new Insets(0));
+            printgridpane.setHgap(5);
+            printgridpane.setVgap(5);
+            ColumnConstraints column1 = new ColumnConstraints(100);
+            ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
+            
+            Label headingLabel = new Label("To-Do List \n");
+            Button b= new Button("ok");
+            Text text = new Text();      
+     
+            
+            Label completedLabel = new Label("Completed tasks \n");
+            Text completed = new Text();  
+            
+            text.setText(todos.toString()); 
+            Date date = todos.get(0).getDueDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+            String formattedDate = sdf.format(date);
+            
+            Label timestamp = new Label ("Timestamp");
+            Text timestamp1=new Text();
+            timestamp1.setText(formattedDate);
+           
+            
+            
+           
+            GridPane.setHalignment(b, HPos.RIGHT);
+
+            printgridpane.add(headingLabel, 0, 0);
+            printgridpane.add(text,0,1);
+            
+            printgridpane.add(timestamp1,0,14);
+            
+            printgridpane.add(b,20,20);
+            
+           
+            
+            
+   
+            
+            return printgridpane;
+
+          
+      }
+
     
     private void priorityUniqueError()
     {
@@ -639,6 +699,21 @@ public class Interface extends Application {
                  restorePopUp();
             }
         });
+         print.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event) {
+                BorderPane root1 = new BorderPane();
+                GridPane printgridpane = printPopUp();
+                root1.setCenter(printgridpane); 
+                Scene popupScene1 = new Scene(root1, 500, 500);
+                popup.setScene(popupScene1);
+                
+                popup.show();
+            }
+        }); 
+
+        
         HBox hbox = new HBox(create, print, save, restore, restart, displayAll);
         todoTableView = createTableView(todos);
         
