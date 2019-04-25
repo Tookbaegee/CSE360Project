@@ -131,7 +131,7 @@ public class Interface extends Application {
         });
         statusCol.setCellValueFactory(new PropertyValueFactory<Todo,String>("status"));
         return todoTableView;
-    }  
+    }   
     
     private int getLastPriorityNum(){
         return todos.size();
@@ -147,17 +147,25 @@ public class Interface extends Application {
         return priorityDup;
     }
     
-    private void incrementPriority(int priorityNum){
+    private void incrementPriority(int priorityNum, int ogPriority){
         for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
-             if(todos.get(todoIndex).getPriorityNum() >= priorityNum){
+             if(todos.get(todoIndex).getPriorityNum() >= priorityNum && todos.get(todoIndex).getPriorityNum() < ogPriority ){
                  todos.get(todoIndex).incrementPriority();
              }
          }
     }
     
-    private void decrementPriority(int priorityNum){
+    private void decrementPriority(int priorityNum, int ogPriority){
         for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
-             if(todos.get(todoIndex).getPriorityNum() < priorityNum){
+             if(todos.get(todoIndex).getPriorityNum() <= priorityNum && todos.get(todoIndex).getPriorityNum() > ogPriority ){
+                 todos.get(todoIndex).decrementPriority();
+             }
+         }
+    }
+    
+     private void decrementAllPriority(int priorityNum){
+        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
+             if(todos.get(todoIndex).getPriorityNum() > priorityNum){
                  todos.get(todoIndex).decrementPriority();
              }
          }
@@ -171,8 +179,10 @@ public class Interface extends Application {
         deleteAlert.setContentText("Are you sure you want to delete?");
         Optional<ButtonType> result = deleteAlert.showAndWait();
         if(result.get() == ButtonType.OK)
-        {
+        {   
+            int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
+            decrementAllPriority(ogPriority);
         }
     }
     
@@ -239,9 +249,18 @@ public class Interface extends Application {
             apply.setVisible(false);
             edit.setVisible(true);
             delete.setVisible(true);
-            
+            descripField.setEditable(false);
+            priorityField.setEditable(false);
+            duePicker.setEditable(false);
+            statusComboBox.setEditable(false);
+            int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             String description = descripField.getText();
-            int priorityNum = Integer.parseInt(priorityField.getText());
+            int priorityNum = -1;
+            try{
+                priorityNum = Integer.parseInt(priorityField.getText());
+            }catch(NumberFormatException numberFormatException){
+                priorityUniqueError();
+            }
             LocalDate localDueDate = duePicker.getValue();
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
@@ -260,20 +279,17 @@ public class Interface extends Application {
                 Date finishDate = Date.from(finishDateInstant);
                 editedTodo.setFinishDate(finishDate);
             }
-            if(checkPriorityDup(priorityNum)){
+            if(priorityNum != -1){
                 //allert user that an entry with the priority number being entered already exists in the list
-                   Alert duplicateAlert = new Alert(AlertType.WARNING);
-                   duplicateAlert.setTitle("Warning Button");
-                   duplicateAlert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
-                   Optional<ButtonType> dupResult = duplicateAlert.showAndWait(); 
                    if(!result.isPresent()){
                     }                 
                     else if(result.get() == ButtonType.OK){
-                        incrementPriority(priorityNum);
-                        decrementPriority(priorityNum);
+                        incrementPriority(priorityNum, ogPriority);
+                        decrementPriority(priorityNum, ogPriority);
                     }
+            
+                 todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);    
             }
-            todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);          
         }      
     }
     
@@ -378,7 +394,9 @@ public class Interface extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() == ButtonType.OK)
         {
+            int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
+            decrementAllPriority(ogPriority);
         }
     }
     
@@ -468,11 +486,7 @@ public class Interface extends Application {
                 duePicker.getEditor().clear();
                 statusComboBox.setDisable(false);
                 statusComboBox.setEditable(true);
-                startPicker.setDisable(false);
-                startPicker.setEditable(true);
                 startPicker.getEditor().clear();
-                finishPicker.setDisable(false);
-                finishPicker.setEditable(true);
                 finishPicker.getEditor().clear();
             }
             
@@ -495,6 +509,36 @@ public class Interface extends Application {
             public void handle(ActionEvent event){
                 completePopUp();
             }});
+        
+        cancelEdit.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                cancelEdit.setVisible(false);
+                apply.setVisible(false);
+                edit.setVisible(true);
+                complete.setVisible(true);
+                delete.setVisible(true);
+                
+            }
+            
+        });
+        
+        statusComboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+            {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
+                {
+                    int index = (Integer)newValue;
+                    startLabel.setVisible(index == 1 || index == 2);
+                    startLabel.setDisable(!(index == 1 || index == 2));
+                    startPicker.setVisible(index == 1 || index == 2);
+                    startPicker.setDisable(!(index == 1 || index == 2));
+                    finishLabel.setVisible(index == 2);
+                    finishLabel.setDisable(!(index == 2));
+                    finishPicker.setVisible(index == 2);
+                    finishPicker.setDisable(!(index == 2));
+                }
+            });
       
         HBox buttonBox = new HBox(edit, delete, complete);
         HBox editBox = new HBox(apply, cancelEdit);
@@ -631,6 +675,9 @@ public class Interface extends Application {
                  duePicker.getEditor().clear();
                  duePicker.setEditable(false);
                  duePicker.setDisable(true);
+                 statusComboBox.setEditable(false);
+                 statusComboBox.setDisable(false);
+                 statusComboBox.setValue("");
                  startPicker.getEditor().clear();
                  startPicker.setEditable(false);
                  startPicker.setDisable(true);
