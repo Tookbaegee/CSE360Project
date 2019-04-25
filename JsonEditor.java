@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CSE360Project;
+package to.pkgdo.list.project.CSE360Project;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 public class JsonEditor {
     public static final String dir = System.getProperty("user.dir");
-    public static String filePath = dir + "\\todolist.json";
+    public static String filePath = "D:\\Document\\2019 Spring\\CSE 360\\To-do List Project\\todolist.json";
     public static ObjectMapper mapper = new ObjectMapper();
     public static FileWriter writer;
     public static FileReader reader;

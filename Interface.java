@@ -62,8 +62,10 @@ public class Interface extends Application {
     // Class variables
     TextField descripField;
     TextField priorityField;
-    TextField dueField;
-    TextField statusField;
+    DatePicker duePicker;
+    ChoiceBox<String> statusChoiceBox;
+    DatePicker startPicker;
+    DatePicker finishPicker;
     Button edit;
     Button delete;
     Button apply;
@@ -118,7 +120,7 @@ public class Interface extends Application {
         return todoTableView;
     }  
       
-    private GridPane addPopUp() 
+    private GridPane createPopUp() 
     {
             GridPane gridpane = new GridPane();
             gridpane.setPadding(new Insets(5));
@@ -138,30 +140,33 @@ public class Interface extends Application {
             TextField numberField = new TextField();
 
             Label dueDateLabel = new Label("Due Date");
-
             DatePicker dueDatePicker = new DatePicker();
-
             HBox hBoxDueDate = new HBox(dueDatePicker);
             hBoxDueDate.setPadding(new Insets( 0,0,0,0));
 
             Label statusLabel = new Label("Status");
             ChoiceBox<String> choiceBox = new ChoiceBox<>();
-            choiceBox.getItems().addAll("Not Started","In Progress");
+            choiceBox.getItems().addAll("Not Started","In Progress", "Finished");
             choiceBox.setValue("Status");
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
             layout.getChildren().addAll(choiceBox);
 
-            Label startDateLabel = new Label("Start Date");
-            
-            DatePicker startDatePicker = new DatePicker();
-
+            Label startDateLabel = new Label("Start Date");          
+            DatePicker startDatePicker = new DatePicker();               
             HBox hBoxStartDate = new HBox(startDatePicker);
-            hBoxStartDate.setPadding(new Insets( 0,0,0,0));
-            
+            hBoxStartDate.setPadding(new Insets( 0,0,0,0));       
             startDateLabel.visibleProperty().set(false);
             hBoxStartDate.visibleProperty().set(false);
+            
+            Label finishDateLabel = new Label ("Finish Date");
+            DatePicker finishDatePicker = new DatePicker();
+            HBox hBoxFinishDate = new HBox(finishDatePicker);
+            hBoxFinishDate.setPadding(new Insets(0, 0, 0, 0));
+            finishDateLabel.visibleProperty().set(false);
+            hBoxFinishDate.visibleProperty().set(false);
+            
             //hides if choiceBox choice is not in progress
             choiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
             {
@@ -169,8 +174,10 @@ public class Interface extends Application {
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
                 {
                     int index = (Integer)newValue;
-                    startDateLabel.visibleProperty().set(index == 1);
-                    hBoxStartDate.visibleProperty().set(index == 1);
+                    startDateLabel.visibleProperty().set(index == 1 || index == 2);
+                    hBoxStartDate.visibleProperty().set(index == 1 || index == 2);
+                    finishDateLabel.visibleProperty().set(index == 2);
+                    hBoxFinishDate.visibleProperty().set(index == 2);
                 }
             });
             
@@ -187,14 +194,20 @@ public class Interface extends Application {
                     Date dueDate = Date.from(dueDateInstant);
                     String status = choiceBox.getValue();
                     Date startDate = new Date();
-                    if(choiceBox.getValue().equals("In Progress"))
+                    Date finishDate = new Date();
+                    if(choiceBox.getValue().equals("In Progress") || choiceBox.getValue().equals("Finished"))
                     {
                         LocalDate localStartDate = startDatePicker.getValue();
                         Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
                         startDate = Date.from(startDateInstant);        
                     }
+                    else if(choiceBox.getValue().equals("Finished")){
+                        LocalDate localFinishDate = finishDatePicker.getValue();
+                        Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
+                        finishDate = Date.from(finishDateInstant);    
+                    }
                     
-                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate);
+                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
                     boolean priorityDup = false;
                     for(int i = 0; i < todos.size(); i++){
                         if(todos.get(i).getPriorityNum() == priorityNum){
@@ -220,7 +233,7 @@ public class Interface extends Application {
             GridPane.setHalignment(dueDateLabel, HPos.RIGHT);
             GridPane.setHalignment(statusLabel, HPos.RIGHT);
             GridPane.setHalignment(startDateLabel, HPos.RIGHT);
-
+            
             GridPane.setHalignment(descriptionField, HPos.LEFT);
             GridPane.setHalignment(numberField, HPos.LEFT);
             GridPane.setHalignment(hBoxDueDate, HPos.LEFT);
@@ -243,8 +256,11 @@ public class Interface extends Application {
             
             gridpane.add(startDateLabel, 0, 4);
             gridpane.add(hBoxStartDate, 1, 4);
+            
+            gridpane.add(finishDateLabel, 0, 5);
+            gridpane.add(hBoxFinishDate, 1, 5);
 
-            gridpane.add(saveButton, 1, 5);
+            gridpane.add(saveButton, 1, 6);
 
             return gridpane;
 
@@ -265,16 +281,24 @@ public class Interface extends Application {
         descripField.setEditable(false);
         priorityField = new TextField();
         priorityField.setEditable(false);
-        dueField = new TextField();
-        dueField.setEditable(false);
-        statusField = new TextField();
-        statusField.setEditable(false);
+        duePicker = new DatePicker();
+        duePicker.setEditable(false);
+        statusChoiceBox = new ChoiceBox<>();
+        statusChoiceBox.getItems().addAll("Not Started","In Progress", "Finished");
+        statusChoiceBox.setValue("Status");
+        statusChoiceBox.setDisable(true);
+        startPicker = new DatePicker();
+        startPicker.setEditable(false);
+        finishPicker = new DatePicker();
+        finishPicker.setEditable(false);
+        
         
         // Labels for the textfields for the right pane
         Label descripLabel = new Label("Description");
         Label priorityLabel = new Label("Priority");
         Label dueLabel = new Label("Due Date");
         Label statusLabel = new Label("Status");
+        Label startLabel = new Label("Start Date");
         
         // Add Edit and Delete Buttons
         edit = new Button("Edit");
@@ -293,9 +317,10 @@ public class Interface extends Application {
                 delete.setVisible(false);
                 descripField.setEditable(true);
                 priorityField.setEditable(true);
-                dueField.setEditable(true);
-                statusField.setEditable(true);
-
+                duePicker.setEditable(true);
+                statusChoiceBox.setDisable(true);
+                startPicker.setEditable(true);
+                finishPicker.setEditable(true);
             }
             
         });
@@ -308,7 +333,7 @@ public class Interface extends Application {
         apply.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
+                applyPopUp();
             }
         });
       
@@ -321,9 +346,11 @@ public class Interface extends Application {
         rightGridPane.add(priorityLabel, 0, 2);
         rightGridPane.add(priorityField, 0, 3);
         rightGridPane.add(dueLabel, 0, 4);
-        rightGridPane.add(dueField, 0, 5);
+        rightGridPane.add(duePicker, 0, 5);
         rightGridPane.add(statusLabel, 0, 6);
-        rightGridPane.add(statusField, 0, 7);
+        rightGridPane.add(statusChoiceBox, 0, 7);
+        rightGridPane.add(startLabel, 0, 8);
+        rightGridPane.add(startPicker,0, 9);
         rightGridPane.add(buttonBox, 0, 15);
         rightGridPane.add(apply, 0, 16);
         
@@ -406,6 +433,19 @@ public class Interface extends Application {
             edit.setVisible(true);
             delete.setVisible(true);
             String description = descripField.getText();
+            int priorityNum = Integer.parseInt(priorityField.getText());
+            LocalDate localDueDate = duePicker.getValue();
+            Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
+            Date dueDate = Date.from(dueDateInstant);
+            LocalDate localStartDate = startPicker.getValue();
+            Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
+            
+            
+            Date startDate = Date.from(startDateInstant);
+            LocalDate localFinishDate = duePicker.getValue();
+            Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
+            Date finishDate = Date.from(finishDateInstant);
+            
             
         }      
     }
@@ -474,10 +514,15 @@ public class Interface extends Application {
                 priorityField.setText(""+observable.getValue().getPriorityNum());
                  String pattern = "MM-dd-yyyy";
                  SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-                 dueField.setText(simpleDateFormat.format(observable.getValue().getDueDate()));
-                 statusField.setText(observable.getValue().getStatus());
+                 duePicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getDueDate()));
+                 statusChoiceBox.setValue(observable.getValue().getStatus());
+                 if(observable.getValue().getStatus().equals("In Progress"))
+                 apply.setVisible(false);
+                 edit.setVisible(true);
+                 delete.setVisible(true);
                  edit.setDisable(false);
                  delete.setDisable(false);
+                 
                }
             }
         );
@@ -486,10 +531,13 @@ public class Interface extends Application {
             public void invalidated(Observable observable) {
                  descripField.clear();
                  priorityField.clear();
-                 dueField.clear();
-                 statusField.clear();
+                 duePicker.getEditor().clear();
+                 startPicker.getEditor().clear();
                  edit.setDisable(true);
                  delete.setDisable(true);
+                 apply.setVisible(false);
+                 edit.setVisible(true);
+                 delete.setVisible(true);
             }
         });
 
@@ -506,7 +554,7 @@ public class Interface extends Application {
                   popup.initModality(Modality.APPLICATION_MODAL);
                   popup.initOwner(primaryStage);
                   BorderPane root = new BorderPane();
-                  GridPane gridpane = addPopUp();
+                  GridPane gridpane = createPopUp();
                   root.setCenter(gridpane); 
                   Scene popupScene = new Scene(root, 300, 200);
                   popup.setScene(popupScene);

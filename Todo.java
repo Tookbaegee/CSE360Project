@@ -1,4 +1,4 @@
-package CSE360Project;
+package to.pkgdo.list.project.CSE360Project;
 
 import java.util.Date;
 import javafx.beans.property.IntegerProperty;
@@ -11,6 +11,7 @@ public class Todo{
 	private int priorityNum;
 	private Date dueDate;
         private Date startDate;
+        private Date finishDate;
 	private String status;
 	
 	public Todo() {
@@ -31,6 +32,14 @@ public class Todo{
 		this.setDueDate(dueDate);
 		this.setStatus(status);
                 this.setStartDate(startDate);
+	}
+            public Todo(String description, int priorityNum, Date dueDate, String status, Date startDate, Date finishDate) {
+		this.setDescription(description);
+		this.setPriorityNum(priorityNum);
+		this.setDueDate(dueDate);
+		this.setStatus(status);
+                this.setStartDate(startDate);
+                this.setFinishDate(finishDate);
 	}
         
       
@@ -73,6 +82,14 @@ public class Todo{
         }
         public Date getStartDate(){
             return startDate;
+        }
+        
+        public void setFinishDate(Date finishDate){
+            this.finishDate = finishDate;
+        }
+        
+        public Date getFinishDate(){
+            return finishDate;
         }
 	
 }
