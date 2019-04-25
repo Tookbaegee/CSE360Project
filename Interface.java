@@ -142,10 +142,14 @@ public class Interface extends Application {
         boolean descripDup = false;
         for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++)
         {
-            if(todos.get(todoIndex).getDescription().equals(description)){
-            
-                descripDup = true;
+            if(todoIndex != todoTableView.getSelectionModel().getSelectedIndex())
+            {
+                 if(todos.get(todoIndex).getDescription().equals(description))
+                {
+                    descripDup = true;
+                }
             }
+           
         }
         return descripDup;
     }
@@ -265,7 +269,6 @@ public class Interface extends Application {
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
             String status = statusComboBox.getValue();
-            editedTodo = new Todo(description, priorityNum, dueDate, status);
             if(startPicker.visibleProperty().get()){
                 LocalDate localStartDate = startPicker.getValue();
                 Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
@@ -280,17 +283,16 @@ public class Interface extends Application {
                 editedTodo.setFinishDate(finishDate);
             }
             if(checkDescripDup(description)){
-                descripUniqueError();
-                
+                descripUniqueError(); 
             }
             try{
                 priorityNum = Integer.parseInt(priorityField.getText());
             }catch(NumberFormatException numberFormatException){
                 priorityUniqueError();
             }
-           
-            if(priorityNum != -1 && !descripField.getText().isEmpty()){
-                //allert user that an entry with the priority number being entered already exists in the list
+            if(priorityNum != -1 && !checkDescripDup(description)){
+                editedTodo = new Todo(description, priorityNum, dueDate, status);
+                //alert user that an entry with the priority number being entered already exists in the list
                    if(!result.isPresent()){
                     }                 
                     else if(result.get() == ButtonType.OK){
@@ -692,12 +694,16 @@ public class Interface extends Application {
                  statusComboBox.getEditor().clear();
                  statusComboBox.setEditable(false);
                  statusComboBox.setDisable(true);
+                 startLabel.setVisible(false);
                  startPicker.getEditor().clear();
                  startPicker.setEditable(false);
                  startPicker.setDisable(true);
+                 startPicker.setVisible(false);
+                 finishLabel.setVisible(false);
                  finishPicker.getEditor().clear();
                  finishPicker.setEditable(false);
                  finishPicker.setDisable(true);
+                 finishPicker.setVisible(false);
                  edit.setDisable(true);
                  delete.setDisable(true);
                  complete.setDisable(true);
