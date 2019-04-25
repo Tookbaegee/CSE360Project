@@ -412,7 +412,14 @@ public class Interface extends Application {
         alert.setContentText("Priority is not an integer");
         alert.showAndWait();
     }
-    
+        private void descripUniqueError()
+    {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error Alert");
+        alert.setHeaderText("Cannot create/edit task");
+        alert.setContentText("Description is not unique");
+        alert.showAndWait();
+    }
     private GridPane rightAppPane()
     {
         // Declare right GridPane to work on
