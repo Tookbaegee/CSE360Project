@@ -71,7 +71,7 @@ public class BinaryEditor {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(BinaryEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return todoList;
+        return sortByPriority(todoList);
     }
     
     public static void writeTodo(List<Todo> todoList){
@@ -94,14 +94,14 @@ public class BinaryEditor {
             fis = new FileInputStream(completedFilePath);
             reader = new ObjectInputStream(fis);
             todoList = (List<Todo>) reader.readObject();
-            
+          
         }
         catch (IOException ex) {
             ex.printStackTrace();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(BinaryEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return todoList;
+        return sortByPriority(todoList);
     }
     
     public static void writeCompletedTodo(List<Todo> todoList){
@@ -124,22 +124,10 @@ public class BinaryEditor {
             3 - by DueDate
             4 - by State (If same state, by description)
     */
-    public static List<Todo> sortByAttribute(List<Todo> todoList, int choice){
-        switch(choice){
-            case 1: 
-                todoList.sort(new DescriptionComparator());
-                break;
-            case 2:
-                todoList.sort(new PriorityNumComparator());
-                break;
-            case 3: 
-                todoList.sort(new DueDateComparator());
-                break;
-            case 4:
-                todoList.sort(new StateComparator());
-                break;
-               
-        }
+    public static List<Todo> sortByPriority(List<Todo> todoList){
+      
+        todoList.sort(new PriorityNumComparator());
+       
         return todoList;
     }
     

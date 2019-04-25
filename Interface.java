@@ -143,14 +143,11 @@ public class Interface extends Application {
         boolean descripDup = false;
         for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++)
         {
-            if(todoIndex != todoTableView.getSelectionModel().getSelectedIndex())
-            {
-                 if(todos.get(todoIndex).getDescription().equals(description))
-                {
-                    descripDup = true;
-                }
-            }
-           
+            if(todos.get(todoIndex).getDescription().equals(description))
+           {
+
+               descripDup = true;
+           }       
         }
         return descripDup;
     }
@@ -257,21 +254,13 @@ public class Interface extends Application {
         {
             
             Todo editedTodo = new Todo();
-            apply.setVisible(false);
-            cancelEdit.setVisible(false);
-            edit.setVisible(true);
-            delete.setVisible(true);
-            descripField.setEditable(false);
-            priorityField.setEditable(false);
-            duePicker.setEditable(false);
-            statusComboBox.setEditable(false);
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             String description = descripField.getText();
             int priorityNum = -1;             
             LocalDate localDueDate = duePicker.getValue();
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
-            String status = statusComboBox.getValue();
+            String status = statusComboBox.getSelectionModel().getSelectedItem();        
             if(startPicker.visibleProperty().get()){
                 LocalDate localStartDate = startPicker.getValue();
                 Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
@@ -285,15 +274,19 @@ public class Interface extends Application {
                 Date finishDate = Date.from(finishDateInstant);
                 editedTodo.setFinishDate(finishDate);
             }
-            if(checkDescripDup(description)){
-                descripUniqueError(); 
-            }
+            
             try{
                 priorityNum = Integer.parseInt(priorityField.getText());
             }catch(NumberFormatException numberFormatException){
-                priorityUniqueError();
+                
             }
-            if(priorityNum != -1 && !checkDescripDup(description)){
+            if(!description.equals(todoTableView.getSelectionModel().getSelectedItem().getDescription()) && checkDescripDup(description)){
+                descripUniqueError(); 
+            }
+            else if(priorityNum == -1){
+                  priorityUniqueError();  
+            }
+            else{
                 editedTodo = new Todo(description, priorityNum, dueDate, status);
                 //alert user that an entry with the priority number being entered already exists in the list
                    if(!result.isPresent()){
@@ -304,12 +297,14 @@ public class Interface extends Application {
                     }
             
                  todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);    
-            }else{
-//                descripField.clear();
-//                priorityField.clear();
-//                duePicker.getEditor().clear();
-//                duePicker.setDisable(true);
-                
+                             apply.setVisible(false);
+                cancelEdit.setVisible(false);
+                edit.setVisible(true);
+                delete.setVisible(true);
+                descripField.setEditable(false);
+                priorityField.setEditable(false);
+                duePicker.setDisable(true);
+                statusComboBox.setDisable(true);
             }
         }      
     }
@@ -502,7 +497,6 @@ public class Interface extends Application {
                 duePicker.getEditor().clear();
                 statusComboBox.setDisable(false);
                 statusComboBox.setEditable(true);
-                statusComboBox.getEditor().clear();
                 startPicker.setDisable(false);
                 startPicker.setEditable(true);
                 startPicker.getEditor().clear();
@@ -537,7 +531,17 @@ public class Interface extends Application {
                 edit.setVisible(true);
                 complete.setVisible(true);
                 delete.setVisible(true);
-                
+                descripField.setEditable(false);
+                priorityField.setEditable(false);
+                statusComboBox.setDisable(true);
+                duePicker.setDisable(true);
+                startLabel.setVisible(false);
+                startPicker.setDisable(true);
+                startPicker.setVisible(false);
+                finishLabel.setVisible(false);
+                finishPicker.setDisable(true);
+                finishPicker.setVisible(false);
+           
             }
             
         });
@@ -652,9 +656,11 @@ public class Interface extends Application {
               if (observable != null && observable.getValue() != null) 
               {
                 descripField.setDisable(false);
+                descripField.setEditable(false);
                 priorityField.setDisable(false);
-                duePicker.setDisable(false);
-                statusComboBox.setDisable(false);
+                priorityField.setEditable(false);
+                duePicker.setDisable(true);
+                statusComboBox.setDisable(true);
                 descripField.setText(observable.getValue().getDescription());
                 priorityField.setText(""+observable.getValue().getPriorityNum());
                  String pattern = "MM/dd/yyyy";
@@ -666,13 +672,15 @@ public class Interface extends Application {
                      startLabel.setVisible(true);
                      startPicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getStartDate()));
                      startPicker.setVisible(true);
-                     startPicker.setDisable(false);
+                     startPicker.setDisable(true);
+   
                  }
                   if(observable.getValue().getStatus().equals("Finished")){
                      finishLabel.setVisible(true);
                      finishPicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getStartDate()));
                      finishPicker.setVisible(true);
-                     finishPicker.setDisable(false);
+                     finishPicker.setDisable(true);
+                   
                  }
                  apply.setVisible(false);
                  edit.setVisible(true);
