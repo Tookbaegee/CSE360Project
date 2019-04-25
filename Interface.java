@@ -392,20 +392,26 @@ public class Interface extends Application {
         // Add panels to Right Grid Pane
         descripField = new TextField();
         descripField.setDisable(true);
+        descripField.setEditable(false);
         priorityField = new TextField();
         priorityField.setDisable(true);
+        priorityField.setEditable(false);
         duePicker = new DatePicker();
         duePicker.setDisable(true);
+        duePicker.setEditable(false);
         statusComboBox = new ComboBox<>();
         statusComboBox.getItems().addAll("Not Started","In Progress", "Finished");
         statusComboBox.setValue("");
         statusComboBox.setDisable(true);
+        statusComboBox.setEditable(false);
         startPicker = new DatePicker();
         startPicker.setDisable(true);
         startPicker.setVisible(false);
+        startPicker.setEditable(false);
         finishPicker = new DatePicker();
         finishPicker.setDisable(true);
         finishPicker.setVisible(false);
+        finishPicker.setEditable(false);
         
         // Labels for the textfields for the right pane
         descripLabel = new Label("Description");
@@ -438,11 +444,17 @@ public class Interface extends Application {
                 edit.setVisible(false);
                 delete.setVisible(false);
                 descripField.setDisable(false);
+                descripField.setEditable(true);
                 priorityField.setDisable(false);
+                priorityField.setEditable(true);
                 duePicker.setDisable(false);
+                duePicker.setEditable(true);
                 statusComboBox.setDisable(false);
+                statusComboBox.setEditable(true);
                 startPicker.setDisable(false);
+                startPicker.setEditable(true);
                 finishPicker.setDisable(false);
+                finishPicker.setEditable(true);
             }
             
         });
@@ -588,9 +600,20 @@ public class Interface extends Application {
             @Override
             public void invalidated(Observable observable) {
                  descripField.clear();
+                 descripField.setEditable(false);
+                 descripField.setDisable(true);
                  priorityField.clear();
+                 priorityField.setEditable(false);
+                 priorityField.setDisable(true);
                  duePicker.getEditor().clear();
+                 duePicker.setEditable(false);
+                 duePicker.setDisable(true);
                  startPicker.getEditor().clear();
+                 startPicker.setEditable(false);
+                 startPicker.setDisable(true);
+                 finishPicker.getEditor().clear();
+                 finishPicker.setEditable(false);
+                 finishPicker.setDisable(true);
                  edit.setDisable(true);
                  delete.setDisable(true);
                  complete.setDisable(true);
