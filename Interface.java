@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.project.CSE360Project;
+package CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -69,6 +69,7 @@ public class Interface extends Application {
     Button edit;
     Button delete;
     Button apply;
+    Button cancelEdit;
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -119,8 +120,63 @@ public class Interface extends Application {
     
         return todoTableView;
     }  
-      
-    private GridPane createPopUp() 
+    private void deletePopUp()
+    {
+        Alert deleteAlert = new Alert(AlertType.CONFIRMATION);
+        deleteAlert.setTitle("Confirmation Dialog");
+        deleteAlert.setHeaderText("Delete Confirmation Dialog");
+        deleteAlert.setContentText("Are you sure you want to delete?");
+        Optional<ButtonType> result = deleteAlert.showAndWait();
+        if(!result.isPresent()){
+        }  // alert is exited, no button has been pressed.
+        else if(result.get() == ButtonType.OK){
+            todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
+        }
+    }
+   
+    private void savePopUp()
+    {
+         Alert alert=new Alert(AlertType.CONFIRMATION);
+         alert.setTitle("Save Button");
+         alert.setHeaderText("Are you sure you want to save these changes and overwrite the saved list?");
+         Optional<ButtonType> result = alert.showAndWait();
+         if(!result.isPresent()){
+         }  // alert is exited, no button has been pressed.
+         else if(result.get() == ButtonType.OK){
+            List<Todo> todolist = new ArrayList<>();
+            todolist.addAll(todos);
+            JsonEditor.resetJson();
+            JsonEditor.writeTodo(todolist);
+         }       
+    } 
+    
+    private void restartPopUp()
+    {
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Restart Button");
+        alert.setHeaderText("Are you sure you want to discard all changes and start from scratch?"); 
+        Optional<ButtonType> result = alert.showAndWait();
+        if(!result.isPresent()){
+        }  // alert is exited, no button has been pressed.
+        else if(result.get() == ButtonType.OK){
+            todos.clear();
+        }
+    }
+    
+    private void restorePopUp()
+    {
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Restore Button");
+        alert.setHeaderText("Are you sure you want to discard all changes and load the saved list?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(!result.isPresent()){
+        }  // alert is exited, no button has been pressed.
+        else if(result.get() == ButtonType.OK){
+            todos.clear();
+            todos.addAll(JsonEditor.readTodo());
+        }      
+    }
+        private GridPane createPopUp() 
     {
             GridPane gridpane = new GridPane();
             gridpane.setPadding(new Insets(5));
@@ -265,8 +321,6 @@ public class Interface extends Application {
             return gridpane;
 
        }
-    
-    
     private GridPane rightAppPane()
     {
         // Declare right GridPane to work on
@@ -305,7 +359,9 @@ public class Interface extends Application {
         edit.setDisable(true);
         delete = new Button("Delete");
         apply = new Button("Apply");
+        cancelEdit = new Button("Cancel");
         apply.setVisible(false);
+        cancelEdit.setVisible(false);
         delete.setDisable(true);
         edit.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -313,16 +369,18 @@ public class Interface extends Application {
             public void handle(ActionEvent event)
             {
                 apply.setVisible(true);
+                cancelEdit.setVisible(true);
                 edit.setVisible(false);
                 delete.setVisible(false);
                 descripField.setEditable(true);
                 priorityField.setEditable(true);
+
                 duePicker.setEditable(true);
                 statusChoiceBox.setDisable(true);
                 startPicker.setEditable(true);
                 finishPicker.setEditable(true);
             }
-            
+          
         });
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -338,8 +396,7 @@ public class Interface extends Application {
         });
       
         HBox buttonBox = new HBox(edit, delete);
-
-        
+        HBox editBox = new HBox(apply, cancelEdit);
         // Create Right Pane
         rightGridPane.add(descripLabel, 0, 0);
         rightGridPane.add(descripField, 0, 1);
@@ -352,7 +409,7 @@ public class Interface extends Application {
         rightGridPane.add(startLabel, 0, 8);
         rightGridPane.add(startPicker,0, 9);
         rightGridPane.add(buttonBox, 0, 15);
-        rightGridPane.add(apply, 0, 16);
+        rightGridPane.add(editBox, 0, 16);
         
          // Center labels on right pane
         rightGridPane.setHalignment(descripLabel, javafx.geometry.HPos.CENTER);
@@ -362,64 +419,7 @@ public class Interface extends Application {
         rightGridPane.setHalignment(buttonBox, javafx.geometry.HPos.CENTER);
         return rightGridPane;
     }
-    
-    private void deletePopUp()
-    {
-        Alert deleteAlert = new Alert(AlertType.CONFIRMATION);
-        deleteAlert.setTitle("Confirmation Dialog");
-        deleteAlert.setHeaderText("Delete Confirmation Dialog");
-        deleteAlert.setContentText("Are you sure you want to delete?");
-        Optional<ButtonType> result = deleteAlert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
-            todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
-        }
-    }
-    
-    private void savePopUp()
-    {
-         Alert alert=new Alert(AlertType.CONFIRMATION);
-         alert.setTitle("Save Button");
-         alert.setHeaderText("Are you sure you want to save these changes and overwrite the saved list?");
-         Optional<ButtonType> result = alert.showAndWait();
-         if(!result.isPresent()){
-         }  // alert is exited, no button has been pressed.
-         else if(result.get() == ButtonType.OK){
-            List<Todo> todolist = new ArrayList<>();
-            todolist.addAll(todos);
-            JsonEditor.resetJson();
-            JsonEditor.writeTodo(todolist);
-         }       
-    } 
-    
-    private void restartPopUp()
-    {
-        Alert alert=new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Restart Button");
-        alert.setHeaderText("Are you sure you want to discard all changes and start from scratch?"); 
-        Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
-            todos.clear();
-        }
-    }
-    
-    private void restorePopUp()
-    {
-        Alert alert=new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Restore Button");
-        alert.setHeaderText("Are you sure you want to discard all changes and load the saved list?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
-            todos.clear();
-            todos.addAll(JsonEditor.readTodo());
-        }      
-    }
-      
+ 
     private void applyPopUp()
     {
         Alert alert=new Alert(AlertType.CONFIRMATION);
@@ -449,7 +449,6 @@ public class Interface extends Application {
             
         }      
     }
-
 
     @Override
     public void start(Stage primaryStage) {
