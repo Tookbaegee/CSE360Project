@@ -76,6 +76,7 @@ public class Interface extends Application {
     Button edit;
     Button delete;
     Button apply;
+    Button cancelEdit;
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -408,7 +409,9 @@ public class Interface extends Application {
         edit.setDisable(true);
         delete = new Button("Delete");
         apply = new Button("Apply");
+        cancelEdit = new Button("Cancel");
         apply.setVisible(false);
+        cancelEdit.setVisible(false);
         delete.setDisable(true);
         edit.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -416,6 +419,7 @@ public class Interface extends Application {
             public void handle(ActionEvent event)
             {
                 apply.setVisible(true);
+                cancelEdit.setVisible(true);
                 edit.setVisible(false);
                 delete.setVisible(false);
                 descripField.setDisable(false);
@@ -441,7 +445,7 @@ public class Interface extends Application {
         });
       
         HBox buttonBox = new HBox(edit, delete);
-
+        HBox editBox = new HBox(apply, cancelEdit);
         
         // Create Right Pane
         rightGridPane.add(descripLabel, 0, 0);
@@ -457,7 +461,7 @@ public class Interface extends Application {
         rightGridPane.add(finishLabel, 0, 10);
         rightGridPane.add(finishPicker, 0, 11);
         rightGridPane.add(buttonBox, 0, 15);
-        rightGridPane.add(apply, 0, 16);
+        rightGridPane.add(editBox, 0, 16);
         
          // Center labels on right pane
         rightGridPane.setHalignment(descripLabel, javafx.geometry.HPos.CENTER);
