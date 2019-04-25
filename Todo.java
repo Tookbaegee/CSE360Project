@@ -25,6 +25,7 @@ public class Todo implements Serializable{
 		this.setDueDate(dueDate);
 		this.setStatus(status);
                 this.setStartDate(new Date(0));
+                this.setFinishDate(new Date(0));
 	}
         
         public Todo(String description, int priorityNum, Date dueDate, String status, Date startDate) {
@@ -33,6 +34,7 @@ public class Todo implements Serializable{
 		this.setDueDate(dueDate);
 		this.setStatus(status);
                 this.setStartDate(startDate);
+                this.setFinishDate(new Date(0));
 	}
             public Todo(String description, int priorityNum, Date dueDate, String status, Date startDate, Date finishDate) {
 		this.setDescription(description);
