@@ -238,6 +238,7 @@ public class Interface extends Application {
 
             Label numberLabel = new Label("Priority Number");
             TextField numberField = new TextField();
+            numberField.setDisable(true);
 
             Label dueDateLabel = new Label("Due Date");
             DatePicker dueDatePicker = new DatePicker();
@@ -245,13 +246,15 @@ public class Interface extends Application {
             hBoxDueDate.setPadding(new Insets( 0,0,0,0));
 
             Label statusLabel = new Label("Status");
-            ComboBox<String> comboBox = new ComboBox<>();
-            comboBox.getItems().addAll("Not Started","In Progress", "Finished");
-            comboBox.setValue("Status");
+            TextField statusField = new TextField("Not Started");
+            statusField.setDisable(true);
+//            ComboBox<String> comboBox = new ComboBox<>();
+//            comboBox.getItems().addAll("Not Started","In Progress", "Finished");
+//            comboBox.setValue("Status");
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
-            layout.getChildren().addAll(comboBox);
+ //           layout.getChildren().addAll(comboBox);
 
             Label startDateLabel = new Label("Start Date");          
             DatePicker startDatePicker = new DatePicker();               
@@ -267,19 +270,19 @@ public class Interface extends Application {
             finishDateLabel.visibleProperty().set(false);
             hBoxFinishDate.visibleProperty().set(false);
             
-            //hides if comboBox choice is not in progress
-            comboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
-            {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
-                {
-                    int index = (Integer)newValue;
-                    startDateLabel.visibleProperty().set(index == 1 || index == 2);
-                    hBoxStartDate.visibleProperty().set(index == 1 || index == 2);
-                    finishDateLabel.visibleProperty().set(index == 2);
-                    hBoxFinishDate.visibleProperty().set(index == 2);
-                }
-            });
+//            //hides if comboBox choice is not in progress
+//            comboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+//            {
+//                @Override
+//                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
+//                {
+//                    int index = (Integer)newValue;
+//                    startDateLabel.visibleProperty().set(index == 1 || index == 2);
+//                    hBoxStartDate.visibleProperty().set(index == 1 || index == 2);
+//                    finishDateLabel.visibleProperty().set(index == 2);
+//                    hBoxFinishDate.visibleProperty().set(index == 2);
+//                }
+//            });
             
             Button saveButton = new Button("Create");
             saveButton.setOnAction(new EventHandler<ActionEvent>() 
@@ -288,48 +291,49 @@ public class Interface extends Application {
                 public void handle(ActionEvent event) 
                 {
                     String description = descriptionField.getText();
-                    int priorityNum = Integer.parseInt(numberField.getText());
+                    //int priorityNum = Integer.parseInt(numberField.getText());
                     LocalDate localDueDate = dueDatePicker.getValue();
                     Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
                     Date dueDate = Date.from(dueDateInstant);
-                    String status = comboBox.getValue();
+                    //String status = comboBox.getValue();
                     Date startDate = new Date();
                     Date finishDate = new Date();
-                    if(comboBox.getValue().equals("In Progress") || comboBox.getValue().equals("Finished"))
-                    {
-                        LocalDate localStartDate = startDatePicker.getValue();
-                        Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-                        startDate = Date.from(startDateInstant);        
-                    }
-                    else if(comboBox.getValue().equals("Finished"))
-                    {
-                        LocalDate localFinishDate = finishDatePicker.getValue();
-                        Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-                        finishDate = Date.from(finishDateInstant);    
-                    }
+//                    if(comboBox.getValue().equals("In Progress") || comboBox.getValue().equals("Finished"))
+//                    {
+//                        LocalDate localStartDate = startDatePicker.getValue();
+//                        Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
+//                        startDate = Date.from(startDateInstant);        
+//                    }
+//                    else if(comboBox.getValue().equals("Finished"))
+//                    {
+//                        LocalDate localFinishDate = finishDatePicker.getValue();
+//                        Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
+//                        finishDate = Date.from(finishDateInstant);    
+//                    }
                     
-                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
-                    boolean priorityDup = false;
-                    for(int iter = 0; iter < todos.size(); iter++)
-                    {
-                        if(todos.get(iter).getPriorityNum() == priorityNum){
-                            priorityDup = true;
-                        }
-                    }
-                    if(priorityDup)
-                    {
-                        //allert user that an entry with the priority number being entered already exists in the list.
-                        Alert alert = new Alert(AlertType.WARNING);
-                        alert.setTitle("Warning Button");
-                        alert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
-                        alert.show(); 
-                    }
-                    else
-                    {
-                          todos.add(todo);
-                    }
-                }
-            });
+//                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
+//                    boolean priorityDup = false;
+//                    for(int iter = 0; iter < todos.size(); iter++)
+//                    {
+//                        if(todos.get(iter).getPriorityNum() == priorityNum)
+//                        {
+//                            priorityDup = true;
+//                        }
+//                    }
+//                    if(priorityDup)
+//                    {
+//                        //allert user that an entry with the priority number being entered already exists in the list.
+//                        Alert alert = new Alert(AlertType.WARNING);
+//                        alert.setTitle("Warning Button");
+//                        alert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
+//                        alert.show(); 
+//                    }
+//                    else
+//                    {
+//                          todos.add(todo);
+//                    }
+//                }
+            }});
 
             GridPane.setHalignment(descriptionLabel, HPos.RIGHT);
             GridPane.setHalignment(numberLabel, HPos.RIGHT);
@@ -339,7 +343,7 @@ public class Interface extends Application {
             GridPane.setHalignment(descriptionField, HPos.LEFT);
             GridPane.setHalignment(numberField, HPos.LEFT);
             GridPane.setHalignment(hBoxDueDate, HPos.LEFT);
-            GridPane.setHalignment(comboBox, HPos.LEFT);
+            GridPane.setHalignment(statusField, HPos.LEFT);
             GridPane.setHalignment(hBoxStartDate, HPos.LEFT);
             GridPane.setHalignment(saveButton, HPos.RIGHT);
 
@@ -350,7 +354,7 @@ public class Interface extends Application {
             gridpane.add(dueDateLabel, 0, 2);
             gridpane.add(hBoxDueDate, 1, 2);
             gridpane.add(statusLabel, 0, 3);
-            gridpane.add(comboBox, 1, 3);
+            gridpane.add(statusField, 1, 3);
             gridpane.add(startDateLabel, 0, 4);
             gridpane.add(hBoxStartDate, 1, 4);
             gridpane.add(finishDateLabel, 0, 5);
@@ -570,12 +574,11 @@ public class Interface extends Application {
                 statusComboBox.setDisable(false);
                 descripField.setText(observable.getValue().getDescription());
                 priorityField.setText(""+observable.getValue().getPriorityNum());
-                 String pattern = "MM-dd-yyyy";
-                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-                 duePicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getDueDate()));
-                 statusComboBox.setValue(observable.getValue().getStatus());
-                 if(observable.getValue().getStatus().equals("In Progress") || observable.getValue().getStatus().equals("Finished")){
-                     
+                String pattern = "MM-dd-yyyy";
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                duePicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getDueDate()));
+                statusComboBox.setValue(observable.getValue().getStatus());
+                if(observable.getValue().getStatus().equals("In Progress") || observable.getValue().getStatus().equals("Finished")){
                      startLabel.setVisible(true);
                      startPicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getStartDate()));
                      startPicker.setVisible(true);
@@ -630,7 +633,8 @@ public class Interface extends Application {
         Label dueLabel = new Label("Due Date");
         Label statusLabel = new Label("Status");
 
-        create.setOnAction(new EventHandler<ActionEvent>(){
+        create.setOnAction(new EventHandler<ActionEvent>()
+        {
             @Override
             public void handle(ActionEvent event) {
                   final Stage popup = new Stage();
@@ -639,7 +643,7 @@ public class Interface extends Application {
                   BorderPane root = new BorderPane();
                   GridPane gridpane = createPopUp();
                   root.setCenter(gridpane); 
-                  Scene popupScene = new Scene(root, 300, 200);
+                  Scene popupScene = new Scene(root, 300, 250);
                   popup.setScene(popupScene);
                   popup.show();
             }
