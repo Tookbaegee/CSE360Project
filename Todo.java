@@ -91,5 +91,12 @@ public class Todo{
         public Date getFinishDate(){
             return finishDate;
         }
+        
+        public void incrementPriority(){
+            this.priorityNum++;
+        }
+        public void decrementPriority(){
+            this.priorityNum--;
+        }
 	
 }

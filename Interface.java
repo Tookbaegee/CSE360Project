@@ -78,6 +78,7 @@ public class Interface extends Application {
     Button apply;
     Button cancelEdit;
     Button complete;
+    final Stage popup = new Stage();
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -108,14 +109,18 @@ public class Interface extends Application {
         dateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
         {
             @Override
-            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) {
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
               return new TableCell<Todo, Date>(){
-                  protected void updateItem(Date duedate, boolean empty){
+                  protected void updateItem(Date duedate, boolean empty)
+                  {
                       super.updateItem(duedate, empty);
-                      if(empty){
+                      if(empty)
+                      {
                           setText(null);
                       }
-                      else{
+                      else
+                      {
                           String pattern = "MM/dd/yyyy";
                           SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                           setText(simpleDateFormat.format(duedate));
@@ -125,7 +130,6 @@ public class Interface extends Application {
             }
         });
         statusCol.setCellValueFactory(new PropertyValueFactory<Todo,String>("status"));
-    
         return todoTableView;
     }  
     
@@ -149,7 +153,6 @@ public class Interface extends Application {
                  todos.get(todoIndex).incrementPriority();
              }
          }
-        
     }
     
     private void decrementPriority(int priorityNum){
@@ -167,22 +170,31 @@ public class Interface extends Application {
         deleteAlert.setHeaderText("Delete Confirmation Dialog");
         deleteAlert.setContentText("Are you sure you want to delete?");
         Optional<ButtonType> result = deleteAlert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
+        if(result.get() == ButtonType.OK)
+        {
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
         }
     }
     
+      private void createConfirmPopUp()
+    {
+        Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirmation Dialog");
+        confirmAlert.setHeaderText("Entry successfully added");
+        confirmAlert.setContentText("You may now exit this window");
+        confirmAlert.show();
+        popup.close();
+        
+    };
+      
     private void savePopUp()
     {
          Alert alert=new Alert(AlertType.CONFIRMATION);
          alert.setTitle("Save Button");
          alert.setHeaderText("Are you sure you want to save these changes and overwrite the saved list?");
          Optional<ButtonType> result = alert.showAndWait();
-         if(!result.isPresent()){
-         }  // alert is exited, no button has been pressed.
-         else if(result.get() == ButtonType.OK){
+         if(result.get() == ButtonType.OK)
+         {
             List<Todo> todolist = new ArrayList<>();
             todolist.addAll(todos);
             JsonEditor.resetJson();
@@ -196,9 +208,8 @@ public class Interface extends Application {
         alert.setTitle("Restart Button");
         alert.setHeaderText("Are you sure you want to discard all changes and start from scratch?"); 
         Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
+        if(result.get() == ButtonType.OK)
+        {
             todos.clear();
         }
     }
@@ -209,9 +220,7 @@ public class Interface extends Application {
         alert.setTitle("Restore Button");
         alert.setHeaderText("Are you sure you want to discard all changes and load the saved list?");
         Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK)
+        if(result.get() == ButtonType.OK)
         {
             todos.clear();
             todos.addAll(JsonEditor.readTodo());
@@ -224,10 +233,9 @@ public class Interface extends Application {
         alert.setTitle("Restore Button");
         alert.setHeaderText("Are you sure you apply the edit made?");
         Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
-            Todo editedTodo;
+        if(result.get() == ButtonType.OK)
+        {
+            Todo editedTodo = new Todo();
             apply.setVisible(false);
             edit.setVisible(true);
             delete.setVisible(true);
@@ -245,7 +253,8 @@ public class Interface extends Application {
                 Date startDate = Date.from(startDateInstant);
                 editedTodo.setStartDate(startDate);
             }
-            if(finishPicker.visibleProperty().get()){
+            if(finishPicker.visibleProperty().get())
+            {
                 LocalDate localFinishDate = duePicker.getValue();
                 Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
                 Date finishDate = Date.from(finishDateInstant);
@@ -286,6 +295,9 @@ public class Interface extends Application {
 
             Label numberLabel = new Label("Priority Number");
             TextField numberField = new TextField();
+            numberField.setDisable(true);
+            numberField.setVisible(true);
+            numberField.setText(""+(getLastPriorityNum() + 1));
 
             Label dueDateLabel = new Label("Due Date");
             DatePicker dueDatePicker = new DatePicker();
@@ -293,13 +305,11 @@ public class Interface extends Application {
             hBoxDueDate.setPadding(new Insets( 0,0,0,0));
 
             Label statusLabel = new Label("Status");
-            ComboBox<String> comboBox = new ComboBox<>();
-            comboBox.getItems().addAll("Not Started","In Progress", "Finished");
-            comboBox.setValue("Status");
+            TextField statusField = new TextField("Not Started");
+            statusField.setDisable(true);
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
-            layout.getChildren().addAll(comboBox);
 
             Label startDateLabel = new Label("Start Date");          
             DatePicker startDatePicker = new DatePicker();               
@@ -315,103 +325,50 @@ public class Interface extends Application {
             finishDateLabel.visibleProperty().set(false);
             hBoxFinishDate.visibleProperty().set(false);
             
-            //hides if comboBox choice is not in progress
-            comboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
-            {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
-                {
-                    int index = (Integer)newValue;
-                    startDateLabel.visibleProperty().set(index == 1 || index == 2);
-                    hBoxStartDate.visibleProperty().set(index == 1 || index == 2);
-                    finishDateLabel.visibleProperty().set(index == 2);
-                    hBoxFinishDate.visibleProperty().set(index == 2);
-                }
-            });
-            
             Button saveButton = new Button("Create");
             saveButton.setOnAction(new EventHandler<ActionEvent>() 
             {
                 @Override
                 public void handle(ActionEvent event) 
                 {
+                    
                     String description = descriptionField.getText();
-                    int priorityNum = Integer.parseInt(numberField.getText());
+                    int priorityNumber = Integer.parseInt(numberField.getText());
                     LocalDate localDueDate = dueDatePicker.getValue();
                     Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
                     Date dueDate = Date.from(dueDateInstant);
-                    String status = comboBox.getValue();
-                    Date startDate = new Date();
-                    Date finishDate = new Date();
-                    if(comboBox.getValue().equals("In Progress") || comboBox.getValue().equals("Finished"))
-                    {
-                        LocalDate localStartDate = startDatePicker.getValue();
-                        Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-                        startDate = Date.from(startDateInstant);        
-                    }
-                    else if(comboBox.getValue().equals("Finished")){
-                        LocalDate localFinishDate = finishDatePicker.getValue();
-                        Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-                        finishDate = Date.from(finishDateInstant);    
-                    }
-                    
-                    Todo todo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
-                    boolean priorityDup = false;
-                    for(int i = 0; i < todos.size(); i++){
-                        if(todos.get(i).getPriorityNum() == priorityNum){
-                            priorityDup = true;
-                        }
-                    }
-                    if(priorityDup){
-                    
-                        //allert user that an entry with the priority number being entered already exists in the list.
-                        
-                           Alert alert = new Alert(AlertType.WARNING);
-                           alert.setTitle("Warning Button");
-                           alert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
-                           alert.show(); 
-                    }else{
-                          todos.add(todo);
-                    }
-                }
-            });
+                    Todo newTodo = new Todo(description, priorityNumber, dueDate, "Not Started");
+                    todos.add(newTodo);
+                    createConfirmPopUp();
+            }});
 
             GridPane.setHalignment(descriptionLabel, HPos.RIGHT);
             GridPane.setHalignment(numberLabel, HPos.RIGHT);
             GridPane.setHalignment(dueDateLabel, HPos.RIGHT);
             GridPane.setHalignment(statusLabel, HPos.RIGHT);
             GridPane.setHalignment(startDateLabel, HPos.RIGHT);
-            
             GridPane.setHalignment(descriptionField, HPos.LEFT);
             GridPane.setHalignment(numberField, HPos.LEFT);
             GridPane.setHalignment(hBoxDueDate, HPos.LEFT);
-            GridPane.setHalignment(comboBox, HPos.LEFT);
+            GridPane.setHalignment(statusField, HPos.LEFT);
             GridPane.setHalignment(hBoxStartDate, HPos.LEFT);
-
             GridPane.setHalignment(saveButton, HPos.RIGHT);
 
             gridpane.add(descriptionLabel, 0, 0);
             gridpane.add(descriptionField, 1, 0);
-
             gridpane.add(numberLabel, 0, 1);
             gridpane.add(numberField, 1, 1);
-
             gridpane.add(dueDateLabel, 0, 2);
             gridpane.add(hBoxDueDate, 1, 2);
-
             gridpane.add(statusLabel, 0, 3);
-            gridpane.add(comboBox, 1, 3);
-            
+            gridpane.add(statusField, 1, 3);
             gridpane.add(startDateLabel, 0, 4);
             gridpane.add(hBoxStartDate, 1, 4);
-            
             gridpane.add(finishDateLabel, 0, 5);
             gridpane.add(hBoxFinishDate, 1, 5);
-
             gridpane.add(saveButton, 1, 6);
 
             return gridpane;
-
        }
     private void completePopUp()
     {
@@ -470,7 +427,6 @@ public class Interface extends Application {
         finishPicker.setEditable(false);
         finishPicker.getEditor().setEditable(false);
         
-        
         // Labels for the textfields for the right pane
         descripLabel = new Label("Description");
         priorityLabel = new Label("Priority");
@@ -501,6 +457,7 @@ public class Interface extends Application {
                 cancelEdit.setVisible(true);
                 edit.setVisible(false);
                 delete.setVisible(false);
+                complete.setVisible(false);
                 descripField.setDisable(false);
                 descripField.setEditable(true);
                 priorityField.clear();
@@ -572,6 +529,10 @@ public class Interface extends Application {
         GridPane baseGridPane = new GridPane();
         GridPane leftGridPane = new GridPane();      
         GridPane rightGridPane = rightAppPane();
+        
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initOwner(primaryStage);
+       
         //add constraints and gaps between components
         leftGridPane.setHgap(8);
         leftGridPane.setVgap(8);
@@ -692,18 +653,16 @@ public class Interface extends Application {
         Label dueLabel = new Label("Due Date");
         Label statusLabel = new Label("Status");
 
-        create.setOnAction(new EventHandler<ActionEvent>(){
+        create.setOnAction(new EventHandler<ActionEvent>()
+        {
             @Override
             public void handle(ActionEvent event) {
-                  final Stage popup = new Stage();
-                  popup.initModality(Modality.APPLICATION_MODAL);
-                  popup.initOwner(primaryStage);
-                  BorderPane root = new BorderPane();
-                  GridPane gridpane = createPopUp();
-                  root.setCenter(gridpane); 
-                  Scene popupScene = new Scene(root, 300, 250);
-                  popup.setScene(popupScene);
-                  popup.show();
+                BorderPane root = new BorderPane();
+                GridPane gridpane = createPopUp();
+                root.setCenter(gridpane); 
+                Scene popupScene = new Scene(root, 300, 250);
+                popup.setScene(popupScene);
+                popup.show();
             }
         });  
        baseGridPane.add(leftGridPane, 0, 0);
