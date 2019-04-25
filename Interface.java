@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CSE360Project;
+package CSE360Project.CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -31,6 +31,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -63,13 +64,18 @@ public class Interface extends Application {
     TextField descripField;
     TextField priorityField;
     DatePicker duePicker;
-    ChoiceBox<String> statusChoiceBox;
+    ComboBox<String> statusComboBox;
+    Label descripLabel;
+    Label priorityLabel;
+    Label dueLabel;
+    Label statusLabel;
+    Label startLabel;
     DatePicker startPicker;
+    Label finishLabel;
     DatePicker finishPicker;
     Button edit;
     Button delete;
     Button apply;
-    Button cancelEdit;
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -120,7 +126,8 @@ public class Interface extends Application {
     
         return todoTableView;
     }  
-    private void deletePopUp()
+    
+     private void deletePopUp()
     {
         Alert deleteAlert = new Alert(AlertType.CONFIRMATION);
         deleteAlert.setTitle("Confirmation Dialog");
@@ -133,7 +140,7 @@ public class Interface extends Application {
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
         }
     }
-   
+    
     private void savePopUp()
     {
          Alert alert=new Alert(AlertType.CONFIRMATION);
@@ -176,7 +183,42 @@ public class Interface extends Application {
             todos.addAll(JsonEditor.readTodo());
         }      
     }
-        private GridPane createPopUp() 
+      
+    private void applyPopUp()
+    {
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Restore Button");
+        alert.setHeaderText("Are you sure you apply the edit made?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(!result.isPresent()){
+        }  // alert is exited, no button has been pressed.
+        else if(result.get() == ButtonType.OK){
+            Todo editedTodo = new Todo();
+            apply.setVisible(false);
+            edit.setVisible(true);
+            delete.setVisible(true);
+            
+            String description = descripField.getText();
+            int priorityNum = Integer.parseInt(priorityField.getText());
+            LocalDate localDueDate = duePicker.getValue();
+            Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
+            Date dueDate = Date.from(dueDateInstant);
+            if(startPicker.visibleProperty().get()){
+                LocalDate localStartDate = startPicker.getValue();
+                Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
+                Date startDate = Date.from(startDateInstant);
+            }
+            if(finishPicker.visibleProperty().get()){
+                LocalDate localFinishDate = duePicker.getValue();
+                Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
+                Date finishDate = Date.from(finishDateInstant);
+            }
+          
+            
+        }      
+    }
+    
+    private GridPane createPopUp() 
     {
             GridPane gridpane = new GridPane();
             gridpane.setPadding(new Insets(5));
@@ -201,13 +243,13 @@ public class Interface extends Application {
             hBoxDueDate.setPadding(new Insets( 0,0,0,0));
 
             Label statusLabel = new Label("Status");
-            ChoiceBox<String> choiceBox = new ChoiceBox<>();
-            choiceBox.getItems().addAll("Not Started","In Progress", "Finished");
-            choiceBox.setValue("Status");
+            ComboBox<String> comboBox = new ComboBox<>();
+            comboBox.getItems().addAll("Not Started","In Progress", "Finished");
+            comboBox.setValue("Status");
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
-            layout.getChildren().addAll(choiceBox);
+            layout.getChildren().addAll(comboBox);
 
             Label startDateLabel = new Label("Start Date");          
             DatePicker startDatePicker = new DatePicker();               
@@ -223,8 +265,8 @@ public class Interface extends Application {
             finishDateLabel.visibleProperty().set(false);
             hBoxFinishDate.visibleProperty().set(false);
             
-            //hides if choiceBox choice is not in progress
-            choiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+            //hides if comboBox choice is not in progress
+            comboBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
             {
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
@@ -248,16 +290,16 @@ public class Interface extends Application {
                     LocalDate localDueDate = dueDatePicker.getValue();
                     Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
                     Date dueDate = Date.from(dueDateInstant);
-                    String status = choiceBox.getValue();
+                    String status = comboBox.getValue();
                     Date startDate = new Date();
                     Date finishDate = new Date();
-                    if(choiceBox.getValue().equals("In Progress") || choiceBox.getValue().equals("Finished"))
+                    if(comboBox.getValue().equals("In Progress") || comboBox.getValue().equals("Finished"))
                     {
                         LocalDate localStartDate = startDatePicker.getValue();
                         Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
                         startDate = Date.from(startDateInstant);        
                     }
-                    else if(choiceBox.getValue().equals("Finished")){
+                    else if(comboBox.getValue().equals("Finished")){
                         LocalDate localFinishDate = finishDatePicker.getValue();
                         Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
                         finishDate = Date.from(finishDateInstant);    
@@ -293,7 +335,7 @@ public class Interface extends Application {
             GridPane.setHalignment(descriptionField, HPos.LEFT);
             GridPane.setHalignment(numberField, HPos.LEFT);
             GridPane.setHalignment(hBoxDueDate, HPos.LEFT);
-            GridPane.setHalignment(choiceBox, HPos.LEFT);
+            GridPane.setHalignment(comboBox, HPos.LEFT);
             GridPane.setHalignment(hBoxStartDate, HPos.LEFT);
 
             GridPane.setHalignment(saveButton, HPos.RIGHT);
@@ -308,7 +350,7 @@ public class Interface extends Application {
             gridpane.add(hBoxDueDate, 1, 2);
 
             gridpane.add(statusLabel, 0, 3);
-            gridpane.add(choiceBox, 1, 3);
+            gridpane.add(comboBox, 1, 3);
             
             gridpane.add(startDateLabel, 0, 4);
             gridpane.add(hBoxStartDate, 1, 4);
@@ -321,6 +363,8 @@ public class Interface extends Application {
             return gridpane;
 
        }
+    
+    
     private GridPane rightAppPane()
     {
         // Declare right GridPane to work on
@@ -332,36 +376,39 @@ public class Interface extends Application {
                 
         // Add panels to Right Grid Pane
         descripField = new TextField();
-        descripField.setEditable(false);
+        descripField.setDisable(true);
         priorityField = new TextField();
-        priorityField.setEditable(false);
+        priorityField.setDisable(true);
         duePicker = new DatePicker();
-        duePicker.setEditable(false);
-        statusChoiceBox = new ChoiceBox<>();
-        statusChoiceBox.getItems().addAll("Not Started","In Progress", "Finished");
-        statusChoiceBox.setValue("Status");
-        statusChoiceBox.setDisable(true);
+        duePicker.setDisable(true);
+        statusComboBox = new ComboBox<>();
+        statusComboBox.getItems().addAll("Not Started","In Progress", "Finished");
+        statusComboBox.setValue("");
+        statusComboBox.setDisable(true);
         startPicker = new DatePicker();
-        startPicker.setEditable(false);
+        startPicker.setDisable(true);
+        startPicker.setVisible(false);
         finishPicker = new DatePicker();
-        finishPicker.setEditable(false);
+        finishPicker.setDisable(true);
+        finishPicker.setVisible(false);
         
         
         // Labels for the textfields for the right pane
-        Label descripLabel = new Label("Description");
-        Label priorityLabel = new Label("Priority");
-        Label dueLabel = new Label("Due Date");
-        Label statusLabel = new Label("Status");
-        Label startLabel = new Label("Start Date");
+        descripLabel = new Label("Description");
+        priorityLabel = new Label("Priority");
+        dueLabel = new Label("Due Date");
+        statusLabel = new Label("Status");
+        startLabel = new Label("Start Date");
+        startLabel.setVisible(false);
+        finishLabel = new Label("Finish Date");
+        finishLabel.setVisible(false);
         
         // Add Edit and Delete Buttons
         edit = new Button("Edit");
         edit.setDisable(true);
         delete = new Button("Delete");
         apply = new Button("Apply");
-        cancelEdit = new Button("Cancel");
         apply.setVisible(false);
-        cancelEdit.setVisible(false);
         delete.setDisable(true);
         edit.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -369,18 +416,16 @@ public class Interface extends Application {
             public void handle(ActionEvent event)
             {
                 apply.setVisible(true);
-                cancelEdit.setVisible(true);
                 edit.setVisible(false);
                 delete.setVisible(false);
-                descripField.setEditable(true);
-                priorityField.setEditable(true);
-
-                duePicker.setEditable(true);
-                statusChoiceBox.setDisable(true);
-                startPicker.setEditable(true);
-                finishPicker.setEditable(true);
+                descripField.setDisable(false);
+                priorityField.setDisable(false);
+                duePicker.setDisable(false);
+                statusComboBox.setDisable(false);
+                startPicker.setDisable(false);
+                finishPicker.setDisable(false);
             }
-          
+            
         });
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -396,7 +441,8 @@ public class Interface extends Application {
         });
       
         HBox buttonBox = new HBox(edit, delete);
-        HBox editBox = new HBox(apply, cancelEdit);
+
+        
         // Create Right Pane
         rightGridPane.add(descripLabel, 0, 0);
         rightGridPane.add(descripField, 0, 1);
@@ -405,11 +451,13 @@ public class Interface extends Application {
         rightGridPane.add(dueLabel, 0, 4);
         rightGridPane.add(duePicker, 0, 5);
         rightGridPane.add(statusLabel, 0, 6);
-        rightGridPane.add(statusChoiceBox, 0, 7);
+        rightGridPane.add(statusComboBox, 0, 7);
         rightGridPane.add(startLabel, 0, 8);
         rightGridPane.add(startPicker,0, 9);
+        rightGridPane.add(finishLabel, 0, 10);
+        rightGridPane.add(finishPicker, 0, 11);
         rightGridPane.add(buttonBox, 0, 15);
-        rightGridPane.add(editBox, 0, 16);
+        rightGridPane.add(apply, 0, 16);
         
          // Center labels on right pane
         rightGridPane.setHalignment(descripLabel, javafx.geometry.HPos.CENTER);
@@ -419,36 +467,8 @@ public class Interface extends Application {
         rightGridPane.setHalignment(buttonBox, javafx.geometry.HPos.CENTER);
         return rightGridPane;
     }
- 
-    private void applyPopUp()
-    {
-        Alert alert=new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Restore Button");
-        alert.setHeaderText("Are you sure you apply the edit made?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-        }  // alert is exited, no button has been pressed.
-        else if(result.get() == ButtonType.OK){
-            apply.setVisible(false);
-            edit.setVisible(true);
-            delete.setVisible(true);
-            String description = descripField.getText();
-            int priorityNum = Integer.parseInt(priorityField.getText());
-            LocalDate localDueDate = duePicker.getValue();
-            Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
-            Date dueDate = Date.from(dueDateInstant);
-            LocalDate localStartDate = startPicker.getValue();
-            Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-            
-            
-            Date startDate = Date.from(startDateInstant);
-            LocalDate localFinishDate = duePicker.getValue();
-            Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-            Date finishDate = Date.from(finishDateInstant);
-            
-            
-        }      
-    }
+    
+   
 
     @Override
     public void start(Stage primaryStage) {
@@ -509,13 +529,31 @@ public class Interface extends Application {
             {
               if (observable != null && observable.getValue() != null) 
               {
+                descripField.setDisable(false);
+                priorityField.setDisable(false);
+                duePicker.setDisable(false);
+                statusComboBox.setDisable(false);
                 descripField.setText(observable.getValue().getDescription());
                 priorityField.setText(""+observable.getValue().getPriorityNum());
                  String pattern = "MM-dd-yyyy";
                  SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                  duePicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getDueDate()));
-                 statusChoiceBox.setValue(observable.getValue().getStatus());
-                 if(observable.getValue().getStatus().equals("In Progress"))
+                 statusComboBox.setValue(observable.getValue().getStatus());
+                 if(observable.getValue().getStatus().equals("In Progress") || observable.getValue().getStatus().equals("Finished")){
+                     
+                     startLabel.setVisible(true);
+                     startPicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getStartDate()));
+                     startPicker.setVisible(true);
+                     startPicker.setDisable(false);
+                 }
+                  if(observable.getValue().getStatus().equals("Finished")){
+                     finishLabel.setVisible(true);
+                     finishPicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getStartDate()));
+                     finishPicker.setVisible(true);
+                     finishPicker.setDisable(false);
+                 }
+              
+                  
                  apply.setVisible(false);
                  edit.setVisible(true);
                  delete.setVisible(true);
