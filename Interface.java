@@ -260,9 +260,7 @@ public class Interface extends Application {
             statusComboBox.setEditable(false);
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             String description = descripField.getText();
-            int priorityNum = -1;
-         
-              
+            int priorityNum = -1;             
             LocalDate localDueDate = duePicker.getValue();
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
