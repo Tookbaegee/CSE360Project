@@ -138,16 +138,16 @@ public class Interface extends Application {
         return todos.size();
     }
     
-    private boolean checkPriorityDup(int priorityNum){
-        boolean priorityDup = false;
+    private boolean checkDescripDup(String description){
+        boolean descripDup = false;
         for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++)
         {
-            if(todos.get(todoIndex).getPriorityNum() == priorityNum)
-            {
-                priorityDup = true;
+            if(todos.get(todoIndex).getDescription().equals(description)){
+            
+                descripDup = true;
             }
         }
-        return priorityDup;
+        return descripDup;
     }
     
     private void incrementPriority(int priorityNum, int ogPriority){
@@ -248,6 +248,7 @@ public class Interface extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() == ButtonType.OK)
         {
+            
             Todo editedTodo = new Todo();
             apply.setVisible(false);
             cancelEdit.setVisible(false);
@@ -260,11 +261,8 @@ public class Interface extends Application {
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             String description = descripField.getText();
             int priorityNum = -1;
-            try{
-                priorityNum = Integer.parseInt(priorityField.getText());
-            }catch(NumberFormatException numberFormatException){
-                priorityUniqueError();
-            }
+         
+              
             LocalDate localDueDate = duePicker.getValue();
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
@@ -283,7 +281,17 @@ public class Interface extends Application {
                 Date finishDate = Date.from(finishDateInstant);
                 editedTodo.setFinishDate(finishDate);
             }
-            if(priorityNum != -1){
+            if(checkDescripDup(description)){
+                descripUniqueError();
+                
+            }
+            try{
+                priorityNum = Integer.parseInt(priorityField.getText());
+            }catch(NumberFormatException numberFormatException){
+                priorityUniqueError();
+            }
+           
+            if(priorityNum != -1 && !descripField.getText().isEmpty()){
                 //allert user that an entry with the priority number being entered already exists in the list
                    if(!result.isPresent()){
                     }                 
@@ -293,6 +301,12 @@ public class Interface extends Application {
                     }
             
                  todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);    
+            }else{
+//                descripField.clear();
+//                priorityField.clear();
+//                duePicker.getEditor().clear();
+//                duePicker.setDisable(true);
+                
             }
         }      
     }
@@ -330,20 +344,6 @@ public class Interface extends Application {
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10, 10, 10, 10));
-
-            Label startDateLabel = new Label("Start Date");          
-            DatePicker startDatePicker = new DatePicker();               
-            HBox hBoxStartDate = new HBox(startDatePicker);
-            hBoxStartDate.setPadding(new Insets( 0,0,0,0));       
-            startDateLabel.visibleProperty().set(false);
-            hBoxStartDate.visibleProperty().set(false);
-            
-            Label finishDateLabel = new Label ("Finish Date");
-            DatePicker finishDatePicker = new DatePicker();
-            HBox hBoxFinishDate = new HBox(finishDatePicker);
-            hBoxFinishDate.setPadding(new Insets(0, 0, 0, 0));
-            finishDateLabel.visibleProperty().set(false);
-            hBoxFinishDate.visibleProperty().set(false);
             
             Button saveButton = new Button("Create");
             saveButton.setOnAction(new EventHandler<ActionEvent>() 
@@ -357,21 +357,24 @@ public class Interface extends Application {
                     LocalDate localDueDate = dueDatePicker.getValue();
                     Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
                     Date dueDate = Date.from(dueDateInstant);
-                    Todo newTodo = new Todo(description, priorityNumber, dueDate, "Not Started");
-                    todos.add(newTodo);
-                    createConfirmPopUp();
+                    if(checkDescripDup(description)){
+                        descripUniqueError();
+                    }
+                    else{
+                        Todo newTodo = new Todo(description, priorityNumber, dueDate, "Not Started");
+                        todos.add(newTodo);
+                        createConfirmPopUp();
+                    }
             }});
 
             GridPane.setHalignment(descriptionLabel, HPos.RIGHT);
             GridPane.setHalignment(numberLabel, HPos.RIGHT);
             GridPane.setHalignment(dueDateLabel, HPos.RIGHT);
             GridPane.setHalignment(statusLabel, HPos.RIGHT);
-            GridPane.setHalignment(startDateLabel, HPos.RIGHT);
             GridPane.setHalignment(descriptionField, HPos.LEFT);
             GridPane.setHalignment(numberField, HPos.LEFT);
             GridPane.setHalignment(hBoxDueDate, HPos.LEFT);
             GridPane.setHalignment(statusField, HPos.LEFT);
-            GridPane.setHalignment(hBoxStartDate, HPos.LEFT);
             GridPane.setHalignment(saveButton, HPos.RIGHT);
 
             gridpane.add(descriptionLabel, 0, 0);
@@ -382,11 +385,7 @@ public class Interface extends Application {
             gridpane.add(hBoxDueDate, 1, 2);
             gridpane.add(statusLabel, 0, 3);
             gridpane.add(statusField, 1, 3);
-            gridpane.add(startDateLabel, 0, 4);
-            gridpane.add(hBoxStartDate, 1, 4);
-            gridpane.add(finishDateLabel, 0, 5);
-            gridpane.add(hBoxFinishDate, 1, 5);
-            gridpane.add(saveButton, 1, 6);
+            gridpane.add(saveButton, 1, 5);
 
             return gridpane;
        }
@@ -412,6 +411,15 @@ public class Interface extends Application {
         alert.setContentText("Priority is not an integer");
         alert.showAndWait();
     }
+    
+    private void descripUniqueError()
+    {
+       Alert alert = new Alert(AlertType.ERROR);
+       alert.setTitle("Error Alert");
+       alert.setHeaderText("Cannot create/edit task");
+       alert.setContentText("Description is not unique");
+       alert.showAndWait();
+     }
     
     private GridPane rightAppPane()
     {
