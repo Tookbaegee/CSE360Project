@@ -116,7 +116,7 @@ public class Interface extends Application {
                           setText(null);
                       }
                       else{
-                          String pattern = "MM-dd-yyyy";
+                          String pattern = "MM/dd/yyyy";
                           SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                           setText(simpleDateFormat.format(duedate));
                       }
@@ -128,6 +128,37 @@ public class Interface extends Application {
     
         return todoTableView;
     }  
+    
+    private int getLastPriorityNum(){
+        return todos.size();
+    }
+    
+    private boolean checkPriorityDup(int priorityNum){
+        boolean priorityDup = false;
+        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
+            if(todos.get(todoIndex).getPriorityNum() == priorityNum){
+                priorityDup = true;
+            }
+        }
+        return priorityDup;
+    }
+    
+    private void incrementPriority(int priorityNum){
+        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
+             if(todos.get(todoIndex).getPriorityNum() >= priorityNum){
+                 todos.get(todoIndex).incrementPriority();
+             }
+         }
+        
+    }
+    
+    private void decrementPriority(int priorityNum){
+        for(int todoIndex = 0; todoIndex < todos.size(); todoIndex++){
+             if(todos.get(todoIndex).getPriorityNum() < priorityNum){
+                 todos.get(todoIndex).decrementPriority();
+             }
+         }
+    }
     
      private void deletePopUp()
     {
@@ -196,7 +227,7 @@ public class Interface extends Application {
         if(!result.isPresent()){
         }  // alert is exited, no button has been pressed.
         else if(result.get() == ButtonType.OK){
-            Todo editedTodo = new Todo();
+            Todo editedTodo;
             apply.setVisible(false);
             edit.setVisible(true);
             delete.setVisible(true);
@@ -206,18 +237,34 @@ public class Interface extends Application {
             LocalDate localDueDate = duePicker.getValue();
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
+            String status = statusComboBox.getValue();
+            editedTodo = new Todo(description, priorityNum, dueDate, status);
             if(startPicker.visibleProperty().get()){
                 LocalDate localStartDate = startPicker.getValue();
                 Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
                 Date startDate = Date.from(startDateInstant);
+                editedTodo.setStartDate(startDate);
             }
             if(finishPicker.visibleProperty().get()){
                 LocalDate localFinishDate = duePicker.getValue();
                 Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
                 Date finishDate = Date.from(finishDateInstant);
+                editedTodo.setFinishDate(finishDate);
             }
-          
-            
+            if(checkPriorityDup(priorityNum)){
+                //allert user that an entry with the priority number being entered already exists in the list
+                   Alert duplicateAlert = new Alert(AlertType.WARNING);
+                   duplicateAlert.setTitle("Warning Button");
+                   duplicateAlert.setHeaderText("The priority number is not unique! Do you want to push all other events?");
+                   Optional<ButtonType> dupResult = duplicateAlert.showAndWait(); 
+                   if(!result.isPresent()){
+                    }                 
+                    else if(result.get() == ButtonType.OK){
+                        incrementPriority(priorityNum);
+                        decrementPriority(priorityNum);
+                    }
+            }
+            todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);          
         }      
     }
     
@@ -406,6 +453,7 @@ public class Interface extends Application {
         duePicker = new DatePicker();
         duePicker.setDisable(true);
         duePicker.setEditable(false);
+        duePicker.getEditor().setEditable(false);
         statusComboBox = new ComboBox<>();
         statusComboBox.getItems().addAll("Not Started","In Progress", "Finished");
         statusComboBox.setValue("");
@@ -415,10 +463,12 @@ public class Interface extends Application {
         startPicker.setDisable(true);
         startPicker.setVisible(false);
         startPicker.setEditable(false);
+        startPicker.getEditor().setEditable(false);
         finishPicker = new DatePicker();
         finishPicker.setDisable(true);
         finishPicker.setVisible(false);
         finishPicker.setEditable(false);
+        finishPicker.getEditor().setEditable(false);
         
         
         // Labels for the textfields for the right pane
@@ -453,16 +503,20 @@ public class Interface extends Application {
                 delete.setVisible(false);
                 descripField.setDisable(false);
                 descripField.setEditable(true);
+                priorityField.clear();
                 priorityField.setDisable(false);
                 priorityField.setEditable(true);
                 duePicker.setDisable(false);
                 duePicker.setEditable(true);
+                duePicker.getEditor().clear();
                 statusComboBox.setDisable(false);
                 statusComboBox.setEditable(true);
                 startPicker.setDisable(false);
                 startPicker.setEditable(true);
+                startPicker.getEditor().clear();
                 finishPicker.setDisable(false);
                 finishPicker.setEditable(true);
+                finishPicker.getEditor().clear();
             }
             
         });
@@ -578,7 +632,7 @@ public class Interface extends Application {
                 statusComboBox.setDisable(false);
                 descripField.setText(observable.getValue().getDescription());
                 priorityField.setText(""+observable.getValue().getPriorityNum());
-                 String pattern = "MM-dd-yyyy";
+                 String pattern = "MM/dd/yyyy";
                  SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                  duePicker.getEditor().setText(simpleDateFormat.format(observable.getValue().getDueDate()));
                  statusComboBox.setValue(observable.getValue().getStatus());
@@ -647,7 +701,7 @@ public class Interface extends Application {
                   BorderPane root = new BorderPane();
                   GridPane gridpane = createPopUp();
                   root.setCenter(gridpane); 
-                  Scene popupScene = new Scene(root, 300, 200);
+                  Scene popupScene = new Scene(root, 300, 250);
                   popup.setScene(popupScene);
                   popup.show();
             }
