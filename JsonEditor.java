@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package CSE360Project;
+package CSE360Project.CSE360Project;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import java.io.File;
