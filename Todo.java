@@ -1,12 +1,13 @@
 package CSE360Project.CSE360Project;
 
+import java.io.Serializable;
 import java.util.Date;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Todo{
+public class Todo implements Serializable{
 	private String description;
 	private int priorityNum;
 	private Date dueDate;
