@@ -83,6 +83,7 @@ public class Interface extends Application {
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
+    private List<Todo> completedTodos = new ArrayList<Todo>();
     
     // Make table method
     private TableView<Todo> createTableView(ObservableList<Todo> todos){
@@ -210,8 +211,8 @@ public class Interface extends Application {
          {
             List<Todo> todolist = new ArrayList<>();
             todolist.addAll(todos);
-            JsonEditor.resetJson();
-            JsonEditor.writeTodo(todolist);
+            BinaryEditor.writeTodo(todolist);
+            BinaryEditor.writeCompletedTodo(completedTodos);
          }       
     } 
     
@@ -224,6 +225,7 @@ public class Interface extends Application {
         if(result.get() == ButtonType.OK)
         {
             todos.clear();
+            completedTodos.clear();
         }
     }
     
@@ -236,7 +238,8 @@ public class Interface extends Application {
         if(result.get() == ButtonType.OK)
         {
             todos.clear();
-            todos.addAll(JsonEditor.readTodo());
+            todos.addAll(BinaryEditor.readTodo());
+            completedTodos.addAll(BinaryEditor.readCompletedTodo());
         }      
     }
       
@@ -396,6 +399,7 @@ public class Interface extends Application {
         if(result.get() == ButtonType.OK)
         {
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
+            completedTodos.add(todoTableView.getSelectionModel().getSelectedItem());
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
             decrementAllPriority(ogPriority);
         }
