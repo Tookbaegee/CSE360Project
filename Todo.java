@@ -1,4 +1,4 @@
-package CSE360Project.CSE360Project;
+package CSE360Project;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -102,4 +102,10 @@ public class Todo implements Serializable{
             this.priorityNum--;
         }
 	
+        public String toString(){
+            String s= "Description: " +getDescription()+"      "+ "Priority Number: "+getPriorityNum()+"\n Status:"+ getStatus()+"\n  Start Date:  "+getStartDate()+"\n Final Date:  "+getFinishDate()+ "\n";
+            return s;
+        }
+
+        
 }
