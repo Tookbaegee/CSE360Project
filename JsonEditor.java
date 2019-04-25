@@ -21,7 +21,8 @@ import java.util.logging.Logger;
  */
 public class JsonEditor {
     public static final String dir = System.getProperty("user.dir");
-    public static String filePath = "D:\\Document\\2019 Spring\\CSE 360\\To-do List Project\\todolist.json";
+    // dir = FileSystems.getDefault().getPath(".").toAbsolutePath();
+    public static String filePath = dir + "\\todolist.json";
     public static ObjectMapper mapper = new ObjectMapper();
     public static FileWriter writer;
     public static FileReader reader;
