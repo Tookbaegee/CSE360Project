@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CSE360Project;
+package CSE360Project.CSE360Project;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -149,7 +149,6 @@ public class Interface extends Application {
         {
             if(todos.get(todoIndex).getDescription().equals(description))
            {
-
                descripDup = true;
            }       
         }
@@ -256,7 +255,6 @@ public class Interface extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() == ButtonType.OK)
         {
-            
             Todo editedTodo = new Todo();
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
             String description = descripField.getText();
@@ -290,6 +288,10 @@ public class Interface extends Application {
             else if(priorityNum == -1){
                   priorityUniqueError();  
             }
+            else if(priorityNum < 1 || priorityNum > todos.size())
+            {
+                priorityRangeError();
+            }
             else{
                 editedTodo = new Todo(description, priorityNum, dueDate, status);
                 //alert user that an entry with the priority number being entered already exists in the list
@@ -300,8 +302,8 @@ public class Interface extends Application {
                         decrementPriority(priorityNum, ogPriority);
                     }
             
-                 todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);    
-                             apply.setVisible(false);
+                todos.set(todoTableView.getSelectionModel().getSelectedIndex(), editedTodo);    
+                apply.setVisible(false);
                 cancelEdit.setVisible(false);
                 edit.setVisible(true);
                 delete.setVisible(true);
@@ -313,8 +315,7 @@ public class Interface extends Application {
         }      
     }
 
-    
-    
+  
     private GridPane createPopUp() 
     {
             GridPane gridpane = new GridPane();
@@ -363,6 +364,10 @@ public class Interface extends Application {
                     Date dueDate = Date.from(dueDateInstant);
                     if(checkDescripDup(description)){
                         descripUniqueError();
+                    }
+                    else if(description.isEmpty())
+                    {
+                        noCreateError();
                     }
                     else{
                         Todo newTodo = new Todo(description, priorityNumber, dueDate, "Not Started");
@@ -451,16 +456,17 @@ public class Interface extends Application {
             
             printgridpane.add(b,20,20);
             
-           
-            
-            
-   
-            
             return printgridpane;
-
-          
       }
 
+    private void noCreateError()
+    {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error Alert");
+        alert.setHeaderText("Cannot create task");
+        alert.setContentText("No description or date entered");
+        alert.showAndWait();
+    }
     
     private void priorityUniqueError()
     {
@@ -468,6 +474,15 @@ public class Interface extends Application {
         alert.setTitle("Error Alert");
         alert.setHeaderText("Cannot edit task");
         alert.setContentText("Priority is not an integer");
+        alert.showAndWait();
+    }
+    
+    private void priorityRangeError()
+    {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error Alert");
+        alert.setContentText("Cannot edit task");
+        alert.setContentText("Priority is not in range. Please submit integer within number of entries.");
         alert.showAndWait();
     }
     
@@ -822,7 +837,7 @@ public class Interface extends Application {
        baseGridPane.add(leftGridPane, 0, 0);
        baseGridPane.add(rightGridPane, 1, 0);
 
-       Scene scene = new Scene(baseGridPane, 800, 600);
+       Scene scene = new Scene(baseGridPane, 800, 450);
        primaryStage.setScene(scene);
        primaryStage.show();
     }
