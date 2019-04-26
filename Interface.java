@@ -217,7 +217,9 @@ public class Interface extends Application {
          {
             List<Todo> todolist = new ArrayList<>();
             todolist.addAll(todos);
+            BinaryEditor.resetBin();
             BinaryEditor.writeTodo(todolist);
+            BinaryEditor.resetCompletedBin();
             BinaryEditor.writeCompletedTodo(completedTodos);
          }       
     } 
@@ -319,7 +321,6 @@ public class Interface extends Application {
         }      
     }
 
-  
     private GridPane createPopUp() 
     {
             GridPane gridpane = new GridPane();
@@ -545,8 +546,6 @@ public class Interface extends Application {
     }
     
     private GridPane printPopUp(){
-       
-       
             GridPane printgridpane = new GridPane();
             printgridpane.setPadding(new Insets(0));
             printgridpane.setHgap(5);
@@ -557,14 +556,10 @@ public class Interface extends Application {
             uniformTodos.addAll(todos);
             uniformTodos.addAll(completedTodos);
             
-            
-            
             Label headingLabel = new Label("To-Do List \n");
            
             Text text = new Text();      
-     
-            
- 
+    
             Text completed = new Text();  
             
             text.setText(todos.toString()); 
@@ -579,18 +574,9 @@ public class Interface extends Application {
             text.setStyle("-fx-font: normal 10px 'Arial' "); 
             headingLabel.setStyle("-fx-font: normal bold 18px 'Arial' ");  
             printgridpane.setStyle("-fx-background-color: BEIGE;"); 
-            
-            
-           
-            
-
             printgridpane.add(headingLabel, 0, 0);
             printgridpane.add(text,0,3);
-            
             printgridpane.add(timestamp1,0,10);
-            
-           
-            
             return printgridpane;
       }
 
@@ -599,7 +585,7 @@ public class Interface extends Application {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error Alert");
         alert.setHeaderText("Cannot create task");
-        alert.setContentText("No description or date entered");
+        alert.setContentText("No description entered");
         alert.showAndWait();
     }
     

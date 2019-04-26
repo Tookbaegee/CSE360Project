@@ -41,7 +41,7 @@ public class BinaryEditor {
                     
         }
         catch (IOException ex) {
-            ex.getStackTrace();
+            //ex.getStackTrace();
         }
     }
     public static void resetCompletedBin(){
@@ -53,7 +53,7 @@ public class BinaryEditor {
                     
         }
         catch (IOException ex) {
-            ex.getStackTrace();
+            //ex.getStackTrace();
         }
     }
     
@@ -83,7 +83,7 @@ public class BinaryEditor {
 
             }
             catch (IOException ex) {
-                //ex.printStackTrace();
+               // ex.printStackTrace();
             }
         }
     }
@@ -113,7 +113,7 @@ public class BinaryEditor {
 
             }
             catch (IOException ex) {
-               // ex.printStackTrace();
+              // ex.printStackTrace();
             }
         }
     }
