@@ -548,13 +548,18 @@ public class Interface extends Application {
             printgridpane.setVgap(5);
             ColumnConstraints column1 = new ColumnConstraints(100);
             ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
+            uniformTodos.clear();
+            uniformTodos.addAll(todos);
+            uniformTodos.addAll(completedTodos);
+            
+            
             
             Label headingLabel = new Label("To-Do List \n");
-            Button b= new Button("ok");
+           
             Text text = new Text();      
      
             
-            Label completedLabel = new Label("Completed tasks \n");
+ 
             Text completed = new Text();  
             
             text.setText(todos.toString()); 
@@ -566,17 +571,20 @@ public class Interface extends Application {
             Text timestamp1=new Text();
             timestamp1.setText(formattedDate);
            
+            text.setStyle("-fx-font: normal 10px 'Arial' "); 
+            headingLabel.setStyle("-fx-font: normal bold 18px 'Arial' ");  
+            printgridpane.setStyle("-fx-background-color: BEIGE;"); 
             
             
            
-            GridPane.setHalignment(b, HPos.RIGHT);
+            
 
             printgridpane.add(headingLabel, 0, 0);
-            printgridpane.add(text,0,1);
+            printgridpane.add(text,0,3);
             
-            printgridpane.add(timestamp1,0,14);
+            printgridpane.add(timestamp1,0,10);
             
-            printgridpane.add(b,20,20);
+           
             
            
             
@@ -827,18 +835,9 @@ public class Interface extends Application {
                  restorePopUp();
             }
         });
-         print.setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event) {
-                BorderPane root1 = new BorderPane();
-                GridPane printgridpane = printPopUp();
-                root1.setCenter(printgridpane); 
-                Scene popupScene1 = new Scene(root1, 500, 500);
-                addPopUp.setScene(popupScene1);
-                addPopUp.show();
-            }
-        }); 
+        
+        
+        
          
         displayAll.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -940,6 +939,19 @@ public class Interface extends Application {
         Label priorityLabel = new Label("Priority");
         Label dueLabel = new Label("Due Date");
         Label statusLabel = new Label("Status");
+        print.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event) {
+                BorderPane root1 = new BorderPane();
+                GridPane printgridpane = printPopUp();
+                root1.setCenter(printgridpane); 
+                Scene popupScene1 = new Scene(root1, 500, 500);
+                addPopUp.setScene(popupScene1);
+                
+                addPopUp.show();
+            }
+        }); 
 
         create.setOnAction(new EventHandler<ActionEvent>()
         {
