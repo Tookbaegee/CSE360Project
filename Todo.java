@@ -104,17 +104,12 @@ public class Todo implements Serializable{
 	
        public String toString(){
             
-        String intro="Task: \n";
-         
-               
-           
-            String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus()+";   Start Date:  "+getStartDate()+"\n                  " "; Final Date:  "+getFinishDate()+ " \n";
-            String total = intro+s+ "\n";
-            
-            
-            
-             
-                return total;
+            String intro = "Task: \n";
+            intro += "Description: " + getDescription() + " ; "+ "Priority Number: " + getPriorityNum();
+            intro +="; Status:  "+ getStatus() + ";   Start Date:  " + getStartDate().toString();
+            intro += "\n                  " + "; Final Date:  " + getFinishDate().toString() + " \n";
+            String total = intro + "\n";   
+            return total;
         }
         
 

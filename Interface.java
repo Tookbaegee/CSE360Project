@@ -56,6 +56,11 @@ import javafx.util.Callback;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 
 
 /**
@@ -85,14 +90,14 @@ public class Interface extends Application {
     Button displayAll;
     final Stage addPopUp = new Stage();
     final Stage displayPopUp = new Stage();
-     Date date = new Date();   //new
-   SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+    Date date = new Date();   //new
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
     String formattedDate = sdf.format(date);
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
     private List<Todo> completedTodos = new ArrayList<Todo>();
-    private ObservableList<Todo> uniformTodos = FXCollections.observableArrayList();
+    private ObservableList<Todo> obsCompletedTodos = FXCollections.observableArrayList();
     
     // Make table method
     private TableView<Todo> createTableView(ObservableList<Todo> todos){
@@ -272,19 +277,19 @@ public class Interface extends Application {
             Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
             Date dueDate = Date.from(dueDateInstant);
             String status = statusComboBox.getSelectionModel().getSelectedItem();        
+            Date startDate = new Date(0);
+            Date finishDate = new Date(0);
             if(startPicker.visibleProperty().get()){
                 LocalDate localStartDate = startPicker.getValue();
                 Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-                Date startDate = Date.from(startDateInstant);
-                editedTodo.setStartDate(startDate);
+                startDate = Date.from(startDateInstant);
             }
-            if(finishPicker.visibleProperty().get())
-            {
-                LocalDate localFinishDate = duePicker.getValue();
+            if(finishPicker.visibleProperty().get()){
+                LocalDate localFinishDate = finishPicker.getValue();
                 Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-                Date finishDate = Date.from(finishDateInstant);
-                editedTodo.setFinishDate(finishDate);
+                finishDate = Date.from(finishDateInstant);          
             }
+            
             
             try{
                 priorityNum = Integer.parseInt(priorityField.getText());
@@ -297,12 +302,12 @@ public class Interface extends Application {
             else if(priorityNum == -1){
                   priorityUniqueError();  
             }
-            else if(priorityNum < 1 || priorityNum > todos.size())
+            else if(priorityNum < 1 ||  priorityNum > todos.size())
             {
                 priorityRangeError();
             }
             else{
-                editedTodo = new Todo(description, priorityNum, dueDate, status);
+                editedTodo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
                 //alert user that an entry with the priority number being entered already exists in the list
                    if(!result.isPresent()){
                     }                 
@@ -361,7 +366,7 @@ public class Interface extends Application {
             Button saveButton = new Button("Create");
             saveButton.setOnAction(new EventHandler<ActionEvent>() 
             {
-                @Override
+                @Override   
                 public void handle(ActionEvent event) 
                 {
                     
@@ -415,7 +420,11 @@ public class Interface extends Application {
         if(result.get() == ButtonType.OK)
         {
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
-            completedTodos.add(todoTableView.getSelectionModel().getSelectedItem());
+            Todo completedTodo = todoTableView.getSelectionModel().getSelectedItem();
+            completedTodo.setDueDate(new Date(0));
+            completedTodo.setStatus("");
+            completedTodo.setPriorityNum(-1);
+            completedTodos.add(completedTodo);
             todoTableView.getItems().remove(todoTableView.getSelectionModel().getSelectedItem());
             decrementAllPriority(ogPriority);
         }
@@ -424,16 +433,11 @@ public class Interface extends Application {
     private void displayPopUp(){
         
         
-         GridPane displayGridPane = new GridPane();
-         displayGridPane.setPadding(new Insets(0));
-         displayGridPane.setHgap(5);
-         displayGridPane.setVgap(5);
-        uniformTodos.clear();
-        uniformTodos.addAll(todos);
-        uniformTodos.addAll(completedTodos);
+        GridPane displayGridPane = new GridPane();
+        displayGridPane.setPadding(new Insets(0));
         final TableView<Todo> displayTableView = new TableView<>();
         displayTableView.setPrefWidth(750);
-        displayTableView.setItems(uniformTodos);
+        displayTableView.setItems(todos);
         
         
         TableColumn<Todo, String> descripCol = new TableColumn("Description");
@@ -480,7 +484,7 @@ public class Interface extends Application {
               };
             }
         });
-      
+        statusCol.setCellValueFactory(new PropertyValueFactory<Todo,String>("status"));
         startDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("startDate"));
         startDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
         {
@@ -499,6 +503,7 @@ public class Interface extends Application {
                       {
                           
                           String pattern = "MM/dd/yyyy";
+                          
                           SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                           if(startDate.getTime() == 0){
                               setText(null);
@@ -527,13 +532,93 @@ public class Interface extends Application {
                       }
                       else
                       {     
+                          
                           String pattern = "MM/dd/yyyy";
                           SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
                           if(finishDate.getTime() == 0){
                               setText(null);
                           }
                           else{
-                               setText(simpleDateFormat.format(finishDate));
+                              setText(simpleDateFormat.format(finishDate));
+                          }
+                      }
+                  }
+              };
+            }
+        });
+        
+        Label compLabel = new Label("Completed To-Do Items");
+        
+        obsCompletedTodos.clear();
+        obsCompletedTodos.addAll(completedTodos);
+        final TableView<Todo> dpCompleteTableView = new TableView<>();
+        dpCompleteTableView.setPrefWidth(750);
+        dpCompleteTableView.setItems(obsCompletedTodos);
+        TableColumn<Todo, String> compDescripCol = new TableColumn("Description");
+        TableColumn<Todo, Date> compStartDateCol = new TableColumn("Start Date");
+        TableColumn<Todo,Date> compFinishDateCol = new TableColumn("Finish Date");
+        dpCompleteTableView.getColumns().addAll(compDescripCol , compStartDateCol, compFinishDateCol);
+        
+        compDescripCol.setPrefWidth(displayTableView.getPrefWidth() / 2);
+        compStartDateCol.setPrefWidth(displayTableView.getPrefWidth() * 1/4);
+        compFinishDateCol.setPrefWidth(displayTableView.getPrefWidth() * 1/4);
+        
+        compDescripCol.setCellValueFactory(new PropertyValueFactory<Todo,String>("description"));
+        compStartDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("startDate"));
+        compStartDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
+        {
+            @Override
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
+              return new TableCell<Todo, Date>(){
+                  protected void updateItem(Date startDate, boolean empty)
+                  {
+                      super.updateItem(startDate, empty);
+                      if(empty)
+                      {
+                          setText(null);
+                      }
+                      else
+                      {
+                          
+                          String pattern = "MM/dd/yyyy";
+                          
+                          SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                           if(startDate.getTime() == 0){
+                              setText(null);
+                          }
+                          {
+                            setText(simpleDateFormat.format(startDate));
+                           }
+                      }
+                  }
+              };
+            }
+        });
+        compFinishDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("finishDate"));
+        compFinishDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
+        {
+            @Override
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
+              return new TableCell<Todo, Date>(){
+                  protected void updateItem(Date finishDate, boolean empty)
+                  {
+                      super.updateItem(finishDate, empty);
+                      if(empty)
+                      {
+                          setText(null);
+                      }
+                      else
+                      {     
+                          
+                          String pattern = "MM/dd/yyyy";
+                          SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                          if(finishDate.getTime() == 0){
+                              setText(null);
+                          }
+                          else{
+                              setText(simpleDateFormat.format(finishDate));
                           }
                       }
                   }
@@ -542,7 +627,11 @@ public class Interface extends Application {
         });
         
         displayGridPane.add(displayTableView, 0, 0);
-        Scene popupScene = new Scene(displayGridPane, 780, 780);
+        BorderPane dpBorder = new BorderPane();
+        dpBorder.setTop(compLabel);
+        dpBorder.setCenter(dpCompleteTableView);
+        displayGridPane.add(dpBorder, 0, 1);
+        Scene popupScene = new Scene(displayGridPane, 780,780);
         addPopUp.setScene(popupScene);
         addPopUp.show();
         
@@ -555,6 +644,7 @@ public class Interface extends Application {
             printgridpane.setVgap(5);
             ColumnConstraints column1 = new ColumnConstraints(100);
             ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
+            List<Todo> uniformTodos = new ArrayList<>();
             uniformTodos.clear();
             uniformTodos.addAll(todos);
             uniformTodos.addAll(completedTodos);
@@ -585,8 +675,7 @@ public class Interface extends Application {
            
             text.setStyle("-fx-font: normal bold 18px 'Arial' "); 
             headingLabel.setStyle("-fx-font: normal bold 20px 'Arial' "); 
-            printgridpane.setBorder(new Border(new BorderStroke(Color.BLACK, 
-            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+            printgridpane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             
             printgridpane.setStyle("-fx-background-color: WHITE;"); 
             
