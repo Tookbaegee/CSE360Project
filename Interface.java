@@ -83,11 +83,13 @@ public class Interface extends Application {
     Button cancelEdit;
     Button complete;
     Button displayAll;
-    final Stage popup = new Stage();
+    final Stage addPopUp = new Stage();
+    final Stage displayPopUp = new Stage();
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
     private List<Todo> completedTodos = new ArrayList<Todo>();
+    private ObservableList<Todo> uniformTodos = FXCollections.observableArrayList();
     
     // Make table method
     private TableView<Todo> createTableView(ObservableList<Todo> todos){
@@ -202,7 +204,7 @@ public class Interface extends Application {
         confirmAlert.setHeaderText("Entry successfully added");
         confirmAlert.setContentText("You may now exit this window");
         confirmAlert.show();
-        popup.close();
+        addPopUp.close();
         
     };
       
@@ -231,6 +233,7 @@ public class Interface extends Application {
         {
             todos.clear();
             completedTodos.clear();
+            
         }
     }
     
@@ -245,7 +248,8 @@ public class Interface extends Application {
             todos.clear();
             todos.addAll(BinaryEditor.readTodo());
             completedTodos.addAll(BinaryEditor.readCompletedTodo());
-        }      
+
+         }      
     }
       
     private void applyPopUp()
@@ -409,6 +413,129 @@ public class Interface extends Application {
     }
     
     private void displayPopUp(){
+        
+        
+         GridPane displayGridPane = new GridPane();
+         displayGridPane.setPadding(new Insets(0));
+         displayGridPane.setHgap(5);
+         displayGridPane.setVgap(5);
+        uniformTodos.clear();
+        uniformTodos.addAll(todos);
+        uniformTodos.addAll(completedTodos);
+        final TableView<Todo> displayTableView = new TableView<>();
+        displayTableView.setPrefWidth(750);
+        displayTableView.setItems(uniformTodos);
+        
+        
+        TableColumn<Todo, String> descripCol = new TableColumn("Description");
+        TableColumn<Todo, Integer> priorityCol = new TableColumn("Priority");
+        TableColumn<Todo, Date> dueDateCol = new TableColumn("Due Date");
+        TableColumn<Todo, String> statusCol = new TableColumn("Status");
+        TableColumn<Todo, Date> startDateCol = new TableColumn("Start Date");
+        TableColumn<Todo,Date> finishDateCol = new TableColumn("Finish Date");
+        // Add column headers to table
+        displayTableView.getColumns().addAll(descripCol, priorityCol, dueDateCol, statusCol, startDateCol, finishDateCol);
+        
+        //set column width
+        descripCol.setPrefWidth(displayTableView.getPrefWidth() / 3);
+        priorityCol.setPrefWidth(displayTableView.getPrefWidth() * 2/15);
+        dueDateCol.setPrefWidth(displayTableView.getPrefWidth() * 2/15);
+        statusCol.setPrefWidth(displayTableView.getPrefWidth() * 2/15);
+        startDateCol.setPrefWidth(displayTableView.getPrefWidth() * 2/15);
+        finishDateCol.setPrefWidth(displayTableView.getPrefWidth() * 2/15);
+        
+        
+        descripCol.setCellValueFactory(new PropertyValueFactory<Todo,String>("description"));
+        priorityCol.setCellValueFactory(new PropertyValueFactory<Todo,Integer>("priorityNum"));
+        dueDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("dueDate"));
+        dueDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
+        {
+            @Override
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
+              return new TableCell<Todo, Date>(){
+                  protected void updateItem(Date duedate, boolean empty)
+                  {
+                      super.updateItem(duedate, empty);
+                      if(empty)
+                      {
+                          setText(null);
+                      }
+                      else
+                      {
+                          String pattern = "MM/dd/yyyy";
+                          SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                          setText(simpleDateFormat.format(duedate));
+                      }
+                  }
+              };
+            }
+        });
+      
+        startDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("startDate"));
+        startDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
+        {
+            @Override
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
+              return new TableCell<Todo, Date>(){
+                  protected void updateItem(Date startDate, boolean empty)
+                  {
+                      super.updateItem(startDate, empty);
+                      if(empty)
+                      {
+                          setText(null);
+                      }
+                      else
+                      {
+                          
+                          String pattern = "MM/dd/yyyy";
+                          SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                          if(startDate.getTime() == 0){
+                              setText(null);
+                          }
+                          else{
+                            setText(simpleDateFormat.format(startDate));
+                          }
+                      }
+                  }
+              };
+            }
+        });
+        finishDateCol.setCellValueFactory(new PropertyValueFactory<Todo, Date>("finishDate"));
+        finishDateCol.setCellFactory(new Callback<TableColumn<Todo, Date>, TableCell<Todo, Date>>() 
+        {
+            @Override
+            public TableCell<Todo, Date> call(TableColumn<Todo, Date> col) 
+            {
+              return new TableCell<Todo, Date>(){
+                  protected void updateItem(Date finishDate, boolean empty)
+                  {
+                      super.updateItem(finishDate, empty);
+                      if(empty)
+                      {
+                          setText(null);
+                      }
+                      else
+                      {     
+                          String pattern = "MM/dd/yyyy";
+                          SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                          if(finishDate.getTime() == 0){
+                              setText(null);
+                          }
+                          else{
+                               setText(simpleDateFormat.format(finishDate));
+                          }
+                      }
+                  }
+              };
+            }
+        });
+        
+        displayGridPane.add(displayTableView, 0, 0);
+        Scene popupScene = new Scene(displayGridPane, 780, 780);
+        addPopUp.setScene(popupScene);
+        addPopUp.show();
         
     }
     
@@ -657,9 +784,10 @@ public class Interface extends Application {
         GridPane leftGridPane = new GridPane();      
         GridPane rightGridPane = rightAppPane();
         
-        popup.initModality(Modality.APPLICATION_MODAL);
-        popup.initOwner(primaryStage);
-       
+        addPopUp.initModality(Modality.APPLICATION_MODAL);
+        addPopUp.initOwner(primaryStage);
+        displayPopUp.initModality(Modality.APPLICATION_MODAL);
+        displayPopUp.initOwner(primaryStage);
         //add constraints and gaps between components
         leftGridPane.setHgap(8);
         leftGridPane.setVgap(8);
@@ -707,11 +835,17 @@ public class Interface extends Application {
                 GridPane printgridpane = printPopUp();
                 root1.setCenter(printgridpane); 
                 Scene popupScene1 = new Scene(root1, 500, 500);
-                popup.setScene(popupScene1);
-                
-                popup.show();
+                addPopUp.setScene(popupScene1);
+                addPopUp.show();
             }
         }); 
+         
+        displayAll.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                displayPopUp();
+            }
+        });
 
         
         HBox hbox = new HBox(create, print, save, restore, restart, displayAll);
@@ -815,8 +949,8 @@ public class Interface extends Application {
                 GridPane gridpane = createPopUp();
                 root.setCenter(gridpane); 
                 Scene popupScene = new Scene(root, 300, 250);
-                popup.setScene(popupScene);
-                popup.show();
+                addPopUp.setScene(popupScene);
+                addPopUp.show();
             }
         });  
        baseGridPane.add(leftGridPane, 0, 0);
