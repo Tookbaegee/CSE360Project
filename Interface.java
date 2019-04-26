@@ -695,7 +695,7 @@ public class Interface extends Application {
             Text completed = new Text(); 
             
            //String final1= todos.toString();
-        String final1= uniformTodos.toString();
+          String final1= uniformTodos.toString();
           final1 = final1.substring(1, final1.length() - 1);
           final1 = final1.replace(",", "");
 
@@ -1100,7 +1100,7 @@ public class Interface extends Application {
                 BorderPane root1 = new BorderPane();
                 GridPane printgridpane = printPopUp();
                 root1.setCenter(printgridpane); 
-                Scene popupScene1 = new Scene(root1, 500, 500);
+                Scene popupScene1 = new Scene(root1, 1200, 800);
                 addPopUp.setScene(popupScene1);
                 
                 addPopUp.show();

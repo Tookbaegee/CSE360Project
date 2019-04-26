@@ -1,6 +1,7 @@
 package CSE360Project.CSE360Project;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -105,9 +106,11 @@ public class Todo implements Serializable{
         public String toString(){
             
         String intro="Task: \n";
-         String a= "Wed Dec 31";
+        String a= "Wed Dec 31";
          
-         
+        String pattern = "MM/dd/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        
             if ((getPriorityNum()==-1)&&getStartDate().toString().contains(a)){
                 String s= "Description: " +getDescription()+" ; "+ " Status: Completed  "+ getStatus();
             String total = intro+s+ "\n";
@@ -116,18 +119,18 @@ public class Todo implements Serializable{
             }
             else if(getStartDate().toString().contains(a))
             {
-            String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus();
+            String s= "Description: " +getDescription()+" ; Priority Number: "+getPriorityNum()+ " ; Due Date:  "+ sdf.format(dueDate)+" ; Status:  "+ getStatus();
             String total = intro+s+ "\n";
              return total;
             }
             else if (getPriorityNum()==-1){
-                String s= "Description: " +getDescription()+" ; "+ "; Status: Completed  "+ getStatus()+";   Start Date:  "+getStartDate()+"; Final Date:  "+getFinishDate()+ " \n";
+                String s= "Description: " +getDescription()+ " ; Status: Completed  "  + getStatus()+" ; Start Date:  "+ sdf.format(getStartDate()) +" ; Final Date:  "+ sdf.format(getFinishDate()) + " \n";
             String total = intro+s+ "\n";
              return total;
                 
             }
             else{
-                 String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus()+";   Start Date:  "+getStartDate()+"; Final Date:  "+getFinishDate()+ " \n";
+                 String s= "Description: " +getDescription()+" ; Priority Number: "+getPriorityNum()+ " ; Due Date:  "+ sdf.format(dueDate)+ " ; Status:  "+ getStatus()+" ; Start Date:  "+ sdf.format(getStartDate()) +" ; Final Date:  "+ sdf.format(getFinishDate())+ " \n";
             String total = intro+s+ "\n";
              return total;
             }
@@ -141,9 +144,7 @@ public class Todo implements Serializable{
             
             
              
-               
-        }
+}
         
 
-        
-}
+      
