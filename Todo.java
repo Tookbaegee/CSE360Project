@@ -108,7 +108,7 @@ public class Todo implements Serializable{
          
                
            
-            String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus()+";   Start Date:  "+getStartDate()+"; Final Date:  "+getFinishDate()+ " \n";
+            String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus()+";   Start Date:  "+getStartDate()+"\n                  " "; Final Date:  "+getFinishDate()+ " \n";
             String total = intro+s+ "\n";
             
             
