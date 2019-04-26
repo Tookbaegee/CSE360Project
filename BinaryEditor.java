@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package CSE360Project;
+package CSE360Project.CSE360Project;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,7 +67,7 @@ public class BinaryEditor {
             
         }
         catch (IOException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(BinaryEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -83,7 +83,7 @@ public class BinaryEditor {
 
             }
             catch (IOException ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
         }
     }
@@ -97,7 +97,7 @@ public class BinaryEditor {
           
         }
         catch (IOException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(BinaryEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -113,7 +113,7 @@ public class BinaryEditor {
 
             }
             catch (IOException ex) {
-                ex.printStackTrace();
+               // ex.printStackTrace();
             }
         }
     }
