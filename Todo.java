@@ -1,4 +1,4 @@
-package CSE360Project;
+package CSE360Project.CSE360Project;
 
 import java.io.Serializable;
 import java.util.Date;
