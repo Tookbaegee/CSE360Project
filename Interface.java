@@ -583,7 +583,7 @@ public class Interface extends Application {
             Text timestamp1=new Text();
             timestamp1.setText(formattedDate);
            
-            text.setStyle("-fx-font: normal 18px 'Arial' "); 
+            text.setStyle("-fx-font: normal bold 18px 'Arial' "); 
             headingLabel.setStyle("-fx-font: normal bold 20px 'Arial' "); 
             printgridpane.setBorder(new Border(new BorderStroke(Color.BLACK, 
             BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
