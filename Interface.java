@@ -85,6 +85,9 @@ public class Interface extends Application {
     Button displayAll;
     final Stage addPopUp = new Stage();
     final Stage displayPopUp = new Stage();
+     Date date = new Date();   //new
+   SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+    String formattedDate = sdf.format(date);
     
     TableView<Todo> todoTableView;
     private ObservableList<Todo> todos = FXCollections.observableArrayList();
@@ -556,28 +559,53 @@ public class Interface extends Application {
             uniformTodos.addAll(todos);
             uniformTodos.addAll(completedTodos);
             
+            
+            
             Label headingLabel = new Label("To-Do List \n");
            
             Text text = new Text();      
-    
-            Text completed = new Text();  
+     
             
-            text.setText(todos.toString()); 
-            Date date = todos.get(0).getDueDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-            String formattedDate = sdf.format(date);
+ 
+            Text completed = new Text(); 
             
-            Label timestamp = new Label ("Timestamp");
+           String final1= todos.toString();
+          final1 = final1.substring(1, final1.length() - 1);
+          final1 = final1.replace(",", "");
+
+            text.setText(final1); 
+            
+           
+            
+           
+            
+            Label timestamp = new Label ("Timestamp:");
             Text timestamp1=new Text();
             timestamp1.setText(formattedDate);
            
-            text.setStyle("-fx-font: normal 10px 'Arial' "); 
-            headingLabel.setStyle("-fx-font: normal bold 18px 'Arial' ");  
-            printgridpane.setStyle("-fx-background-color: BEIGE;"); 
+            text.setStyle("-fx-font: normal 18px 'Arial' "); 
+            headingLabel.setStyle("-fx-font: normal bold 20px 'Arial' "); 
+            printgridpane.setBorder(new Border(new BorderStroke(Color.BLACK, 
+            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+            
+            printgridpane.setStyle("-fx-background-color: WHITE;"); 
+            
+          
             printgridpane.add(headingLabel, 0, 0);
             printgridpane.add(text,0,3);
+           
+            printgridpane.add(timestamp,0,9);
             printgridpane.add(timestamp1,0,10);
+            
+           
+            
+           
+            
+            
+   
+            
             return printgridpane;
+
       }
 
     private void noCreateError()
