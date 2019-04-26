@@ -271,26 +271,44 @@ public class Interface extends Application {
         {
             Todo editedTodo = new Todo();
             int ogPriority = todoTableView.getSelectionModel().getSelectedItem().getPriorityNum();
-            String description = descripField.getText();
+            String description = "";
+            try{
+                description = descripField.getText().trim();
+            }catch(NullPointerException e){      
+            }
             int priorityNum = -1;             
             LocalDate localDueDate = duePicker.getValue();
-            Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
-            Date dueDate = Date.from(dueDateInstant);
-            String status = statusComboBox.getSelectionModel().getSelectedItem();        
+            Date dueDate = new Date(0);
+            try{
+                Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
+                dueDate = Date.from(dueDateInstant);
+            }catch(NullPointerException e){
+                
+            }
+            String status = "";
+            if(statusComboBox.getSelectionModel().getSelectedItem() != null)
+                status = statusComboBox.getSelectionModel().getSelectedItem();        
             Date startDate = new Date(0);
             Date finishDate = new Date(0);
-            if(startPicker.visibleProperty().get()){
+      
+            if(startPicker.visibleProperty().get()){     
                 LocalDate localStartDate = startPicker.getValue();
-                Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
-                startDate = Date.from(startDateInstant);
+                try{                 
+                    Instant startDateInstant = Instant.from(localStartDate.atStartOfDay(ZoneId.systemDefault()));
+                    startDate = Date.from(startDateInstant);
+                }catch(NullPointerException e){
+                    
+                }
             }
             if(finishPicker.visibleProperty().get()){
                 LocalDate localFinishDate = finishPicker.getValue();
-                Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
-                finishDate = Date.from(finishDateInstant);          
+                try{
+                    Instant finishDateInstant = Instant.from(localFinishDate.atStartOfDay(ZoneId.systemDefault()));
+                    finishDate = Date.from(finishDateInstant);          
+                }catch(NullPointerException e){
+                    
+                }
             }
-            
-            
             try{
                 priorityNum = Integer.parseInt(priorityField.getText());
             }catch(NumberFormatException numberFormatException){
@@ -305,6 +323,13 @@ public class Interface extends Application {
             else if(priorityNum < 1 ||  priorityNum > todos.size())
             {
                 priorityRangeError();
+            }
+            else if(description == null || description.equals("") || dueDate.getTime() == 0 || status.equals("") || (startPicker.visibleProperty().get() && startDate.getTime() == 0) || (finishPicker.visibleProperty().get() && finishDate.getTime() == 0)){
+                Alert fieldEmptyAlert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Alert");
+                alert.setHeaderText("Cannot edit task");
+                alert.setContentText("At least one of the field is empty.");
+                alert.showAndWait();
             }
             else{
                 editedTodo = new Todo(description, priorityNum, dueDate, status, startDate, finishDate);
@@ -370,15 +395,25 @@ public class Interface extends Application {
                 public void handle(ActionEvent event) 
                 {
                     
-                    String description = descriptionField.getText();
+                    String description = "";
+                    try{
+                        description = descriptionField.getText().trim();
+                    }catch(NullPointerException e){
+                      
+                    }
                     int priorityNumber = Integer.parseInt(numberField.getText());
                     LocalDate localDueDate = dueDatePicker.getValue();
-                    Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
-                    Date dueDate = Date.from(dueDateInstant);
+                    Date dueDate = new Date(0);
+                    try{
+                        Instant dueDateInstant = Instant.from(localDueDate.atStartOfDay(ZoneId.systemDefault()));
+                        dueDate= Date.from(dueDateInstant);
+                    }catch(NullPointerException e){
+                        
+                    }
                     if(checkDescripDup(description)){
                         descripUniqueError();
-                    }
-                    else if(description.isEmpty())
+                    }        
+                    else if(description.equals("") || description == null || dueDate.getTime() == 0)
                     {
                         noCreateError();
                     }
@@ -702,7 +737,7 @@ public class Interface extends Application {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error Alert");
         alert.setHeaderText("Cannot create task");
-        alert.setContentText("No description entered");
+        alert.setContentText("At least one of the fields is not entered");
         alert.showAndWait();
     }
     
