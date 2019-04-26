@@ -694,7 +694,8 @@ public class Interface extends Application {
  
             Text completed = new Text(); 
             
-           String final1= todos.toString();
+           //String final1= todos.toString();
+        String final1= uniformTodos.toString();
           final1 = final1.substring(1, final1.length() - 1);
           final1 = final1.replace(",", "");
 
