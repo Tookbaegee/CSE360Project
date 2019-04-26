@@ -102,21 +102,42 @@ public class Todo implements Serializable{
             this.priorityNum--;
         }
 	
-         public String toString(){
+        public String toString(){
             
         String intro="Task: \n";
          String a= "Wed Dec 31";
-            if(getStartDate().toString().contains(a))
+         
+         
+            if ((getPriorityNum()==-1)&&getStartDate().toString().contains(a)){
+                String s= "Description: " +getDescription()+" ; "+ " Status: Completed  "+ getStatus();
+            String total = intro+s+ "\n";
+             return total;
+                
+            }
+            else if(getStartDate().toString().contains(a))
             {
             String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus();
             String total = intro+s+ "\n";
              return total;
+            }
+            else if (getPriorityNum()==-1){
+                String s= "Description: " +getDescription()+" ; "+ "; Status: Completed  "+ getStatus()+";   Start Date:  "+getStartDate()+"; Final Date:  "+getFinishDate()+ " \n";
+            String total = intro+s+ "\n";
+             return total;
+                
             }
             else{
                  String s= "Description: " +getDescription()+" ; "+ "Priority Number: "+getPriorityNum()+"; Status:  "+ getStatus()+";   Start Date:  "+getStartDate()+"; Final Date:  "+getFinishDate()+ " \n";
             String total = intro+s+ "\n";
              return total;
             }
+            
+            
+             
+               
+        }
+        
+        
             
             
              
